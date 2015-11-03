@@ -1,0 +1,7 @@
+c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\FredAPI.exe.config
+c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\FredAPI.exe
+c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\FredAPI.pdb
+c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\Xaye.Fred.dll
+c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\obj\Debug\FredAPI.exe
+c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\obj\Debug\FredAPI.pdb
+C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\obj\Debug\FredAPI.csprojResolveAssemblyReference.cache
