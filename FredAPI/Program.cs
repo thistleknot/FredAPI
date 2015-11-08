@@ -150,13 +150,22 @@ namespace FredAPI
 
 
 
-                //http://stackoverflow.com/questions/141088/what-is-the-best-way-to-iterate-over-a-dictionary-in-c
-                //foreach (var obData in data)
-                //foreach (KeyValuePair<string, string> entry in data)
-                foreach (var obData in data)
+            //http://stackoverflow.com/questions/141088/what-is-the-best-way-to-iterate-over-a-dictionary-in-c
+            //foreach (var obData in data)
+            //foreach (KeyValuePair<string, string> entry in data)
+
+            //WriteLine(data.Count);
+
+            DateTime[] minDates = new DateTime[data.Count];
+            DateTime[] maxDates = new DateTime[data.Count];
+
+            int counter = 0;
+
+            foreach (var obData in data)
             {
                 DateTime lowestDate = new DateTime(1600, 1, 1);
                 DateTime highestDate = new DateTime(1600, 1, 1);
+
                 WriteLine(obData.Key);
                 var list = obData.Value;
                 
@@ -181,14 +190,74 @@ namespace FredAPI
                     {
                         highestDate = ob.Date;
                     }
+                    
 
                     //Console.WriteLine(ob.Date.ToShortDateString() + " : " + ob.Value);
 
                 }
                 Console.WriteLine(lowestDate.ToShortDateString());
                 Console.WriteLine(highestDate.ToShortDateString());
+
+                minDates[counter] = lowestDate;
+                maxDates[counter] = highestDate;
+
+                counter++;
             }
-            
+
+            Console.WriteLine("Min dates");
+            foreach (var ob in minDates)
+            {
+                
+                Console.WriteLine(ob.ToShortDateString());
+                
+            }
+            Console.WriteLine("Max dates");
+            foreach (var ob in maxDates)
+            {
+                
+                Console.WriteLine(ob.ToShortDateString());
+
+            }
+
+            DateTime lowestDate2 = new DateTime(1600, 1, 1);
+            DateTime highestDate2 = new DateTime(1600, 1, 1);
+
+            foreach (var ob in minDates)
+            {
+                if (lowestDate2 == new DateTime(1600, 1, 1))
+                {
+                    lowestDate2 = ob.Date;
+                }
+
+                if (ob.Date > lowestDate2)
+                {
+                    lowestDate2 = ob.Date;
+                }
+
+            }
+
+            foreach (var ob in maxDates)
+            {
+
+                if (highestDate2 == new DateTime(1600, 1, 1))
+                {
+                    highestDate2 = ob.Date;
+                }
+
+                if (ob.Date < highestDate2)
+                {
+                    highestDate2 = ob.Date;
+                }
+
+
+            }
+
+            Console.WriteLine("Min Date:");
+
+            Console.WriteLine(lowestDate2.ToShortDateString());
+            Console.WriteLine("Max Date:");
+            Console.WriteLine(highestDate2.ToShortDateString());
+
 
         }
 
