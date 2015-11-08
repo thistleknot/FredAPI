@@ -5,3 +5,9 @@ c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\Xa
 c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\obj\Debug\FredAPI.exe
 c:\users\user\documents\visual studio 2015\Projects\FredAPI\FredAPI\obj\Debug\FredAPI.pdb
 C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\obj\Debug\FredAPI.csprojResolveAssemblyReference.cache
+C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\DynamicInterop.dll
+C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\RDotNet.dll
+C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\RDotNet.NativeLibrary.dll
+C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\DynamicInterop.xml
+C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\RDotNet.xml
+C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\RDotNet.NativeLibrary.xml
