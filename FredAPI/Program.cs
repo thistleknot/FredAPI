@@ -12,37 +12,6 @@ namespace FredAPI
     class Program
     {
 
-        /*
-        //used for iterating through dates see
-        //http://stackoverflow.com/questions/3891564/create-array-of-months-between-two-dates
-        //http://www.dotnetperls.com/ienumerable
-
-        static IEnumerable<DateTime> monthsBetween(DateTime d0, DateTime d1)
-        {
-
-            return Enumerable.Range(0, (d1.Year - d0.Year) * 12 + (d1.Month - d0.Month + 1))
-                             .Select(m => new DateTime(d0.Year, d0.Month, 1).AddMonths(m));
-        }
-
-        //http://stackoverflow.com/questions/3738748/create-an-array-or-list-of-all-dates-between-two-dates
-        public static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
-        {
-            if (endDate < startDate)
-                throw new ArgumentException("endDate must be greater than or equal to startDate");
-
-            while (startDate <= endDate)
-            {
-                yield return startDate;
-                startDate = startDate.AddDays(1);
-            }
-        }
-
-        public static IEnumerable<DateTime> Range(DateTime startDate, DateTime endDate)
-        {
-            return Enumerable.Range(0, (endDate - startDate).Days + 1).Select(d => startDate.AddDays(d));
-        }
-
-        */
 
         public class Item
         {
@@ -51,11 +20,6 @@ namespace FredAPI
 
         static void Main(string[] args)
         {
-
-            /*
-            IEnumerable<int> result = from value in Enumerable.Range(0, 2)
-                                      select value;
-                                      */
 
             var fred = new Fred("661c0a90e914477da5a7518293de5f8e");
 
@@ -89,72 +53,33 @@ namespace FredAPI
 
             var data = new Dictionary<string, IList<Observation>>
             {
-                //var independentVars = new fred.GetSeriesObservations[];
-            
                 //independent variables
 
-                //rGDP
-                //var rGDP = fred.GetSeriesObservations("GDPC1", startDate, endDate);
-                {"rGDP", fred.GetSeriesObservations("GDPC1", startDate, endDate).ToList() },
+                    //rGDP
+                    {"rGDP", fred.GetSeriesObservations("GDPC1", startDate, endDate).ToList() },
 
-            //savings
-            //var pSaveRate = fred.GetSeriesObservations("PSAVERT", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
-            //{ "pSaveRate", fred.GetSeriesObservations("PSAVERT", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() },
-            { "pSaveRate", fred.GetSeriesObservations("PSAVERT", startDate, endDate, frequency: Frequency.Monthly).ToList() },
+                    //savings
+                    { "pSaveRate", fred.GetSeriesObservations("PSAVERT", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
-            //federal fund rate
-            //var fedFundRate = fred.GetSeriesObservations("DFF", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
-            //{ "fedFundRate", fred.GetSeriesObservations("DFF", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() },
-            { "fedFundRate", fred.GetSeriesObservations("DFF", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-            //fred.GetSeriesObservations("DFF", startDate, endDate, frequency: Frequency.Monthly);
-            //fred.GetSeriesObservations("DFF", new DateTime(2005, 10, 1), new DateTime(2015, 10, 30), Frequency=Frequency.Monthly);
-            //fred.GetSeriesObservations("DFF", new DateTime(2005, 10, 1), new DateTime(2015, 10, 30), frequency: Frequency.Monthly);
+                    //federal fund rate
+                    { "fedFundRate", fred.GetSeriesObservations("DFF", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
+                    //employee Population Ratio
+                    { "empPopRatio", fred.GetSeriesObservations("EMRATIO", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
-            //employee Population Ratio
-            //var empPopRatio = fred.GetSeriesObservations("EMRATIO#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
-            //{ "empPopRatio", fred.GetSeriesObservations("EMRATIO#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() },
-            { "empPopRatio", fred.GetSeriesObservations("EMRATIO", startDate, endDate, frequency: Frequency.Monthly).ToList() },
+                    //consumer confidence index
+                    { "consConfIndex", fred.GetSeriesObservations("UMCSENT", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
-            //consumer confidence index
-            //var consConfIndex = fred.GetSeriesObservations("UMCSENT", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
-            //{ "consConfIndex", fred.GetSeriesObservations("UMCSENT", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() },
-            { "consConfIndex", fred.GetSeriesObservations("UMCSENT", startDate, endDate, frequency: Frequency.Monthly).ToList() },
+                //inflationary variable
 
-            //inflationary variable
-
-            //consumer price index harmonized
-            //var consPriceIndex = fred.GetSeriesObservations("CP0000USM086NEST#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
-            //{ "consPriceIndex", fred.GetSeriesObservations("CP0000USM086NEST#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() },
-            { "consPriceIndex", fred.GetSeriesObservations("CP0000USM086NEST", startDate, endDate, frequency: Frequency.Monthly).ToList() },
+                    //consumer price index harmonized
+                    { "consPriceIndex", fred.GetSeriesObservations("CP0000USM086NEST", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
                 //dependent variables
 
-                //var housingSeries = fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
-                //dates are wrong
-                //{ "housingSeries ", fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() }
-                { "housingSeries", fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-
+                    { "housingSeries", fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
         };
-
-            /*
-            var test = data["empPopRatio"];
-            foreach (var ob in test)
-            {
-                Console.WriteLine(ob.Date.ToShortDateString() + " : " + ob.Value);
-
-            }
-            */
-
-
-
-
-            //http://stackoverflow.com/questions/141088/what-is-the-best-way-to-iterate-over-a-dictionary-in-c
-            //foreach (var obData in data)
-            //foreach (KeyValuePair<string, string> entry in data)
-
-            //WriteLine(data.Count);
 
             DateTime[] minDates = new DateTime[data.Count];
             DateTime[] maxDates = new DateTime[data.Count];
@@ -190,9 +115,6 @@ namespace FredAPI
                     {
                         highestDate = ob.Date;
                     }
-                    
-
-                    //Console.WriteLine(ob.Date.ToShortDateString() + " : " + ob.Value);
 
                 }
                 Console.WriteLine(lowestDate.ToShortDateString());
@@ -249,15 +171,12 @@ namespace FredAPI
                     highestDate2 = ob.Date;
                 }
 
-
             }
 
             Console.WriteLine("Min Date:");
-
             Console.WriteLine(lowestDate2.ToShortDateString());
             Console.WriteLine("Max Date:");
             Console.WriteLine(highestDate2.ToShortDateString());
-
 
         }
 
