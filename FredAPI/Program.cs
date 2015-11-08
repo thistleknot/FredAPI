@@ -85,6 +85,8 @@ namespace FredAPI
             DateTime startDate = new DateTime(2005, startMonth, 1);
             DateTime endDate = new DateTime(2015, endMonth, DateTime.DaysInMonth(endYear, endMonth));
 
+            //can't use # in GetSeriesObservations.  Ignores the dates.
+
             var data = new Dictionary<string, IList<Observation>>
             {
                 //var independentVars = new fred.GetSeriesObservations[];
@@ -112,7 +114,7 @@ namespace FredAPI
             //employee Population Ratio
             //var empPopRatio = fred.GetSeriesObservations("EMRATIO#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
             //{ "empPopRatio", fred.GetSeriesObservations("EMRATIO#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() },
-            { "empPopRatio", fred.GetSeriesObservations("EMRATIO#", startDate, endDate, frequency: Frequency.Monthly).ToList() },
+            { "empPopRatio", fred.GetSeriesObservations("EMRATIO", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
             //consumer confidence index
             //var consConfIndex = fred.GetSeriesObservations("UMCSENT", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
@@ -124,28 +126,34 @@ namespace FredAPI
             //consumer price index harmonized
             //var consPriceIndex = fred.GetSeriesObservations("CP0000USM086NEST#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
             //{ "consPriceIndex", fred.GetSeriesObservations("CP0000USM086NEST#", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() },
-            { "consPriceIndex", fred.GetSeriesObservations("CP0000USM086NEST#", startDate, endDate, frequency: Frequency.Monthly).ToList() },
+            { "consPriceIndex", fred.GetSeriesObservations("CP0000USM086NEST", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
                 //dependent variables
 
                 //var housingSeries = fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly);
                 //dates are wrong
                 //{ "housingSeries ", fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, Fred.CstTime(), Fred.CstTime(), Enumerable.Empty<DateTime>(), frequency: Frequency.Monthly).ToList() }
-                { "housingSeries", fred.GetSeriesObservations("SPCS20RSA#", startDate, endDate, frequency: Frequency.Monthly).ToList() },
+                { "housingSeries", fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, frequency: Frequency.Monthly).ToList() },
 
 
         };
 
+            /*
+            var test = data["empPopRatio"];
+            foreach (var ob in test)
+            {
+                Console.WriteLine(ob.Date.ToShortDateString() + " : " + ob.Value);
+
+            }
+            */
 
 
 
 
-
-
-            //http://stackoverflow.com/questions/141088/what-is-the-best-way-to-iterate-over-a-dictionary-in-c
-            //foreach (var obData in data)
-            //foreach (KeyValuePair<string, string> entry in data)
-            foreach (var obData in data)
+                //http://stackoverflow.com/questions/141088/what-is-the-best-way-to-iterate-over-a-dictionary-in-c
+                //foreach (var obData in data)
+                //foreach (KeyValuePair<string, string> entry in data)
+                foreach (var obData in data)
             {
                 DateTime lowestDate = new DateTime(1600, 1, 1);
                 DateTime highestDate = new DateTime(1600, 1, 1);
