@@ -11,6 +11,7 @@ namespace FredAPI
 
     class Program
     {
+
         
         static void PrintData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
@@ -24,7 +25,50 @@ namespace FredAPI
                     WriteLine("{0}-{1}, {2}", ob.Key.Year, ob.Key.Month, ob.Value);
                 }
             }
+        }
 
+        //can't add elements to dictionary by reference...
+        //actually I can, I just can't use a foreach... duh
+        static void FillInGaps(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
+        {
+
+            //some bullshit date, gets overwritten after counter > 0
+            DateTime lastDate = new DateTime(1776, 1, 1);
+            double? lastValue = 0;
+
+            //for each FredObject
+            foreach (var obData in dataDictionary)
+            {
+                WriteLine("Key {0}", obData.Key);
+
+                int counter = 0;
+                var list = obData.Value;
+
+                //for each Date, Value pair (in specific FredObject)
+                foreach (var ob in list)
+                {
+                    if (counter!=0)
+                    {
+                        //flag for quarterly data
+                        if ((ob.Key - lastDate).TotalDays > 31)
+                        {
+                            WriteLine((ob.Key - lastDate).TotalDays);
+                            //list.Add(lastDate.AddMonths(1), lastValue);
+                            //list.Add(lastDate.AddMonths(2), lastValue);
+                            WriteLine("Dates!");
+                            WriteLine(lastDate.AddMonths(1));
+                            WriteLine(lastDate.AddMonths(2));
+                            WriteLine(lastValue.ToString());
+                        }
+
+                    }
+                    
+                    
+                    lastDate = ob.Key;
+                    lastValue = ob.Value;
+                    counter++;
+                }
+            }
 
         }
         
@@ -204,6 +248,47 @@ namespace FredAPI
             PrintData(sortedDataList);
 
             //insert records into rGDP
+            //FillInGaps(ref sortedDataList);
+
+            
+            //some bullshit date, gets overwritten after counter > 0
+            DateTime lastDate = new DateTime(1776, 1, 1);
+            double? lastValue = 0;
+
+            //for each FredObject
+            foreach (var obData in sortedDataList)
+            {
+                WriteLine("Key {0}", obData.Key);
+
+                counter = 0;
+                var list = obData.Value;
+
+                //for each Date, Value pair (in specific FredObject)
+                foreach (var ob in list)
+                {
+                    if (counter != 0)
+                    {
+                        //flag for quarterly data
+                        if ((ob.Key - lastDate).TotalDays > 31)
+                        {
+                            WriteLine((ob.Key - lastDate).TotalDays);
+                            list.Add(lastDate.AddMonths(1), lastValue);
+                            list.Add(lastDate.AddMonths(2), lastValue);
+                            WriteLine("Dates!");
+                            WriteLine(lastDate.AddMonths(1));
+                            WriteLine(lastDate.AddMonths(2));
+                            WriteLine(lastValue.ToString());
+                        }
+
+                    }
+
+
+                    lastDate = ob.Key;
+                    lastValue = ob.Value;
+                    counter++;
+                }
+            }
+            PrintData(sortedDataList);
 
 
         }
