@@ -31,30 +31,52 @@ namespace FredAPI
         //actually I can, I just can't use a foreach... duh
         static void FillInGaps(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
+            
 
             //some bullshit date, gets overwritten after counter > 0
             DateTime lastDate = new DateTime(1776, 1, 1);
             double? lastValue = 0;
 
             //for each FredObject
+
+
             foreach (var obData in dataDictionary)
+            //while (dataDictionary.count > 0)
             {
                 WriteLine("Key {0}", obData.Key);
 
                 int counter = 0;
                 var list = obData.Value;
+                //var list = dataDictionary[i];
 
                 //for each Date, Value pair (in specific FredObject)
+
+                //var holder = new Dictionary<string, SortedList<DateTime, double?>> { };
+
+                var holder = new SortedList<DateTime, double?> { };
+
+
                 foreach (var ob in list)
                 {
+                    
                     if (counter!=0)
                     {
                         //flag for quarterly data
                         if ((ob.Key - lastDate).TotalDays > 31)
                         {
                             WriteLine((ob.Key - lastDate).TotalDays);
-                            //list.Add(lastDate.AddMonths(1), lastValue);
-                            //list.Add(lastDate.AddMonths(2), lastValue);
+
+
+                            //sortedDataList.Add(dataNames[dataCounter], new SortedList<DateTime, double?>(list.ToDictionary(x => x.Date, x => x.Value)));
+                            //Collection was modified after the enumerator was instantiated
+                            //can't do list.Add due to forEach loop already having enumerated the list to loop through.
+
+                            //I could modify this for the # of days in the month, doa  weighted sum
+                            holder.Add(lastDate.AddMonths(1), (ob.Value + lastValue)/2);
+                            holder.Add(lastDate.AddMonths(2), (ob.Value + lastValue)/2);
+
+                            //holder.Add(lastDate.AddMonths(2), lastValue);
+
                             WriteLine("Dates!");
                             WriteLine(lastDate.AddMonths(1));
                             WriteLine(lastDate.AddMonths(2));
@@ -68,6 +90,14 @@ namespace FredAPI
                     lastValue = ob.Value;
                     counter++;
                 }
+
+                //add to list out of the loop
+                foreach (var ob in holder)
+                {
+                    list.Add(ob.Key, ob.Value);
+
+                }
+
             }
 
         }
@@ -248,48 +278,13 @@ namespace FredAPI
             PrintData(sortedDataList);
 
             //insert records into rGDP
-            //FillInGaps(ref sortedDataList);
-
+            FillInGaps(ref sortedDataList);
             
             //some bullshit date, gets overwritten after counter > 0
             DateTime lastDate = new DateTime(1776, 1, 1);
             double? lastValue = 0;
 
-            //for each FredObject
-            foreach (var obData in sortedDataList)
-            {
-                WriteLine("Key {0}", obData.Key);
-
-                counter = 0;
-                var list = obData.Value;
-
-                //for each Date, Value pair (in specific FredObject)
-                foreach (var ob in list)
-                {
-                    if (counter != 0)
-                    {
-                        //flag for quarterly data
-                        if ((ob.Key - lastDate).TotalDays > 31)
-                        {
-                            WriteLine((ob.Key - lastDate).TotalDays);
-                            list.Add(lastDate.AddMonths(1), lastValue);
-                            list.Add(lastDate.AddMonths(2), lastValue);
-                            WriteLine("Dates!");
-                            WriteLine(lastDate.AddMonths(1));
-                            WriteLine(lastDate.AddMonths(2));
-                            WriteLine(lastValue.ToString());
-                        }
-
-                    }
-
-
-                    lastDate = ob.Key;
-                    lastValue = ob.Value;
-                    counter++;
-                }
-            }
             PrintData(sortedDataList);
-
 
         }
 
