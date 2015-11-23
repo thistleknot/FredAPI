@@ -11,12 +11,14 @@ namespace FredAPI
 
     class Program
     {
-
-
-        public class Item
+        /*
+        static void printData(var dict)
         {
 
         }
+        */
+
+
 
         static void Main(string[] args)
         {
@@ -46,40 +48,36 @@ namespace FredAPI
             entry = ReadLine();
             endMonth = Convert.ToInt32(entry);
 
-            DateTime startDate = new DateTime(2005, startMonth, 1);
-            DateTime endDate = new DateTime(2015, endMonth, DateTime.DaysInMonth(endYear, endMonth));
+            DateTime startDate = new DateTime(startYear, startMonth, 1);
+            DateTime endDate = new DateTime(endYear, endMonth, DateTime.DaysInMonth(endYear, endMonth));
 
             //can't use # in GetSeriesObservations.  Ignores the dates.
 
+            string[] dataNames = new string[] { "rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries" };
+            string[] obsNames = new string[] { "GDPC1", "PSAVERT", "DFF", "EMRATIO", "UMCSENT", "CP0000USM086NEST", "SPCS20RSA" };
+
+            int dataCounter = 0;
+
             var data = new Dictionary<string, IList<Observation>>
             {
-                //independent variables
+            };
 
-                    //rGDP
-                    {"rGDP", fred.GetSeriesObservations("GDPC1", startDate, endDate).ToList() },
+            //create lists as FredAPI objects
+            foreach (var instance in dataNames)
+            {
+                if (dataNames[dataCounter] == "rGDP")
+                {
+                    data.Add(dataNames[dataCounter], fred.GetSeriesObservations(obsNames[dataCounter], startDate, endDate).ToList());
+                }
+                else
+                {
+                    data.Add(dataNames[dataCounter], fred.GetSeriesObservations(obsNames[dataCounter], startDate, endDate, frequency: Frequency.Monthly).ToList());
+                }
+                
+                
 
-                    //savings
-                    { "pSaveRate", fred.GetSeriesObservations("PSAVERT", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-
-                    //federal fund rate
-                    { "fedFundRate", fred.GetSeriesObservations("DFF", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-
-                    //employee Population Ratio
-                    { "empPopRatio", fred.GetSeriesObservations("EMRATIO", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-
-                    //consumer confidence index
-                    { "consConfIndex", fred.GetSeriesObservations("UMCSENT", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-
-                //inflationary variable
-
-                    //consumer price index harmonized
-                    { "consPriceIndex", fred.GetSeriesObservations("CP0000USM086NEST", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-
-                //dependent variables
-
-                    { "housingSeries", fred.GetSeriesObservations("SPCS20RSA", startDate, endDate, frequency: Frequency.Monthly).ToList() },
-
-        };
+                dataCounter++;
+            };
 
             DateTime[] minDates = new DateTime[data.Count];
             DateTime[] maxDates = new DateTime[data.Count];
@@ -94,6 +92,7 @@ namespace FredAPI
                 WriteLine(obData.Key);
                 var list = obData.Value;
                 
+                //the reason date works here is because the object type has two elements.  A .Date and a .Value
                 foreach (var ob in list)
                 {
                     if (lowestDate == new DateTime(1600,1,1))
@@ -117,8 +116,8 @@ namespace FredAPI
                     }
 
                 }
-                Console.WriteLine(lowestDate.ToShortDateString());
-                Console.WriteLine(highestDate.ToShortDateString());
+                //Console.WriteLine(lowestDate.ToShortDateString());
+                //Console.WriteLine(highestDate.ToShortDateString());
 
                 minDates[counter] = lowestDate;
                 maxDates[counter] = highestDate;
@@ -126,14 +125,14 @@ namespace FredAPI
                 counter++;
             }
 
-            Console.WriteLine("Min dates");
+            //Console.WriteLine("Min dates");
             foreach (var ob in minDates)
             {
                 
                 Console.WriteLine(ob.ToShortDateString());
                 
             }
-            Console.WriteLine("Max dates");
+            //Console.WriteLine("Max dates");
             foreach (var ob in maxDates)
             {
                 
@@ -160,7 +159,7 @@ namespace FredAPI
 
             foreach (var ob in maxDates)
             {
-
+                
                 if (highestDate2 == new DateTime(1600, 1, 1))
                 {
                     highestDate2 = ob.Date;
@@ -177,6 +176,33 @@ namespace FredAPI
             Console.WriteLine(lowestDate2.ToShortDateString());
             Console.WriteLine("Max Date:");
             Console.WriteLine(highestDate2.ToShortDateString());
+
+            //convert data to sortedList
+            var sortedDataList = new Dictionary<string, SortedList<DateTime, double?>> { };
+
+            dataCounter = 0;
+
+            foreach (var obData in data)
+            {
+                var list = obData.Value;
+                sortedDataList.Add(dataNames[dataCounter], new SortedList<DateTime, double?>(list.ToDictionary(x => x.Date, x => x.Value)));
+                dataCounter++;
+            }
+
+            //print data
+            foreach (var obData in data)
+
+            {
+                WriteLine(obData.Key);
+                var list = obData.Value;
+                foreach (var ob in list)
+                {
+                    WriteLine("{0}, {1}", ob.Date, ob.Value);
+                }
+
+
+              }
+
 
         }
 
