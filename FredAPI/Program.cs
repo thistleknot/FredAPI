@@ -11,12 +11,23 @@ namespace FredAPI
 
     class Program
     {
-        /*
-        static void printData(var dict)
+        
+        static void PrintData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
+            foreach (var obData in dataDictionary)
+            {
+                WriteLine(obData.Key);
+                var list = obData.Value;
+                foreach (var ob in list)
+                {
+                    //WriteLine("{0}-{1}, {2}", ob.Date.Year, ob.Date.Month, ob.Value);
+                    WriteLine("{0}-{1}, {2}", ob.Key.Year, ob.Key.Month, ob.Value);
+                }
+            }
+
 
         }
-        */
+        
 
 
 
@@ -190,16 +201,7 @@ namespace FredAPI
             }
 
             //print data
-            foreach (var obData in sortedDataList)
-            {
-                WriteLine(obData.Key);
-                var list = obData.Value;
-                foreach (var ob in list)
-                {
-                    //WriteLine("{0}-{1}, {2}", ob.Date.Year, ob.Date.Month, ob.Value);
-                    WriteLine("{0}-{1}, {2}", ob.Key.Year, ob.Key.Month, ob.Value);
-                }
-              }
+            PrintData(sortedDataList);
 
             //insert records into rGDP
 
