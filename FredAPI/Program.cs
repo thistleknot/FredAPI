@@ -177,7 +177,7 @@ namespace FredAPI
             Console.WriteLine("Max Date:");
             Console.WriteLine(highestDate2.ToShortDateString());
 
-            //convert data to sortedList
+            //convert data to sortedList (the DateTime becomes key of the SortedList), the string is the Key of the Dictionary.
             var sortedDataList = new Dictionary<string, SortedList<DateTime, double?>> { };
 
             dataCounter = 0;
@@ -190,18 +190,18 @@ namespace FredAPI
             }
 
             //print data
-            foreach (var obData in data)
-
+            foreach (var obData in sortedDataList)
             {
                 WriteLine(obData.Key);
                 var list = obData.Value;
                 foreach (var ob in list)
                 {
-                    WriteLine("{0}, {1}", ob.Date, ob.Value);
+                    //WriteLine("{0}-{1}, {2}", ob.Date.Year, ob.Date.Month, ob.Value);
+                    WriteLine("{0}-{1}, {2}", ob.Key.Year, ob.Key.Month, ob.Value);
                 }
-
-
               }
+
+            //insert records into rGDP
 
 
         }
