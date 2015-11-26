@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Console;
 using Xaye.Fred;
+//using System.Text.RegularExpressions.Regex;
 
 namespace FredAPI
 {
@@ -12,7 +13,26 @@ namespace FredAPI
     class Program
     {
 
-        
+        //from http://stackoverflow.com/questions/4734116/find-and-extract-a-number-from-a-string
+        static int extractNumber(string text)
+        {
+            //string a = "str123";
+            string b = string.Empty;
+            int val = 0;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (Char.IsDigit(text[i]))
+                    b += text[i];
+            }
+
+            if (b.Length > 0)
+                val = int.Parse(b);
+
+            return val;
+
+        }
+
         static void PrintData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
             foreach (var obData in dataDictionary)
@@ -115,6 +135,8 @@ namespace FredAPI
             int startMonth;
             int endMonth;
 
+            int deflateYear = 0;
+
             string entry;
 
             Write("Enter start year, ex. 2005: ");
@@ -153,16 +175,32 @@ namespace FredAPI
                 if (dataNames[dataCounter] == "rGDP")
                 {
                     data.Add(dataNames[dataCounter], fred.GetSeriesObservations(obsNames[dataCounter], startDate, endDate).ToList());
+
                 }
                 else
                 {
                     data.Add(dataNames[dataCounter], fred.GetSeriesObservations(obsNames[dataCounter], startDate, endDate, frequency: Frequency.Monthly).ToList());
                 }
-                
-                
 
                 dataCounter++;
             };
+
+           if (data.ContainsKey("rGDP"))
+            {
+
+                //var series = data["rGDP"];
+                
+                var series = fred.GetSeries("GDPC1");
+                var units = series.Units;
+                Console.WriteLine("Units: ");
+                Console.WriteLine(units);
+
+                //string resultString = Regex.Match(units, @"\d+").Value;
+                deflateYear = extractNumber(series.Units);
+
+                Console.WriteLine(deflateYear.ToString());
+
+            }
 
             DateTime[] minDates = new DateTime[data.Count];
             DateTime[] maxDates = new DateTime[data.Count];
@@ -282,12 +320,11 @@ namespace FredAPI
             
             //some bullshit date, gets overwritten after counter > 0
             DateTime lastDate = new DateTime(1776, 1, 1);
-            double? lastValue = 0;
+            //double? lastValue = 0;
 
             PrintData(sortedDataList);
 
         }
-
 
     }
 
