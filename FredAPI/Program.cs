@@ -59,7 +59,7 @@ namespace FredAPI
             int slidingWindowSize = 6;
             int numSlidingWindows;
 
-            int slidingWindow = 6;
+            int slidingWindows = 6;
             int numSlides;
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
@@ -83,7 +83,7 @@ namespace FredAPI
 
             if (entry2 != "")
             {
-                slidingWindow = Int32.Parse(entry2);
+                slidingWindows = Int32.Parse(entry2);
             }
             else
             {
@@ -92,19 +92,19 @@ namespace FredAPI
             //startYear = Convert.ToInt32(entry);
 
             numSlidingWindows = arraySize - slidingWindowSize;
-            numSlides = numSlidingWindows - slidingWindow;
+            numSlides = numSlidingWindows - slidingWindows;
 
-            for (int i = 0; i < numSlides; ++i)
+            for (int i = 0; i < numSlides - 1; ++i)
             {
                 String[] slideNames = new String[numSlides];
+                String[] testNames = new String[numSlides];
 
-                slideNames[i] = "SlidingSegment" + i;
+                slideNames[i] = "SlidingSegment" + i + ".txt";
 
                 using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(slideNames[i], true))
                 {
                     //file.WriteLine("Fourth line");
-
 
                     //inputs, hidden, output
                     file.WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
@@ -113,20 +113,39 @@ namespace FredAPI
                     {
 
                         file.Write("In: ");
-                        for (int p = 0; p < slidingWindowSize; p++)
+                        for (int p = 0; p < slidingWindows; p++)
                         {
 
-                            file.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + p + q].ToShortDateString(), dataDictionary["rGDP"][dates[i + p]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p]].Value.ToString());
-                            if (p != (slidingWindowSize - 1))
+                            file.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + p + q].ToShortDateString(), dataDictionary["rGDP"][dates[i + p + q]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + q]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + q]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q]].Value.ToString());
+                            if (p != (slidingWindows - 1))
                             {
                                 file.Write(",");
                             }
-
                         }
-                        file.WriteLine();
-                        file.WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + q + slidingWindowSize]].Value.ToString());
 
+                            file.WriteLine();
+                            file.WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + q + slidingWindowSize]].Value.ToString());
                     }
+                    testNames[i] = "testNames" + i + ".txt";
+                    using (System.IO.StreamWriter testFile =
+                    new System.IO.StreamWriter(testNames[i], true))
+                    {
+                        testFile.WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
+                        testFile.Write("In: ");
+                        for (int p = 0; p < slidingWindowSize; p++)
+                        {
+                            //testFile.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + p + slidingWindowSize].ToShortDateString(), dataDictionary["rGDP"][dates[i + p + slidingWindowSize]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + slidingWindowSize]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + slidingWindowSize]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q + 1]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q + 1]].Value.ToString());
+                            if (p != (slidingWindowSize - 1))
+                            {
+                                testFile.Write(",");
+                            }
+                        }
+                        WriteLine();
+                        //testFile.WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + q + slidingWindowSize + 1]].Value.ToString());
+                    }
+
+
+
                 }
             }
 
