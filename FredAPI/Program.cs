@@ -35,6 +35,26 @@ namespace FredAPI
 
         static void PrintData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
+            //"rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries"
+
+            IList<DateTime> dates = dataDictionary["rGDP"].Keys.ToList();
+            //IList<double?> rGDP = dataDictionary["rGDP"].;
+            /*
+            IList<double?> pSaveRate;
+            IList<double?> fedFundRate;
+            IList<double?> empPopRatio;
+            IList<double?> consConfIndex;
+            IList<double?> housingSeries;
+            */
+            //IList <DateTime> = dataDictionary[]
+
+            foreach (DateTime date in dates)
+            {
+                WriteLine("{0}, {1}, {2}, {3}, {4}, {5}, {6}", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
+
+            }
+
+            /*
             foreach (var obData in dataDictionary)
             {
                 WriteLine(obData.Key);
@@ -45,6 +65,7 @@ namespace FredAPI
                     WriteLine("{0}-{1}, {2}", ob.Key.Year, ob.Key.Month, ob.Value);
                 }
             }
+            */
         }
 
         static void deInflate(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary, int year)
@@ -67,8 +88,8 @@ namespace FredAPI
                 {
                     priceRunningTotal += place.Value;
                     counter++;
-                    WriteLine(shortDate);
-                    WriteLine(priceRunningTotal);
+                    //WriteLine(shortDate);
+                    //WriteLine(priceRunningTotal);
 
                 }
 
@@ -89,8 +110,8 @@ namespace FredAPI
                 {
                     CPIRunningTotal += place.Value;
                     counter++;
-                    WriteLine(shortDate);
-                    WriteLine(CPIRunningTotal);
+                    //WriteLine(shortDate);
+                    //WriteLine(CPIRunningTotal);
 
                 }
 
@@ -161,7 +182,7 @@ namespace FredAPI
                         //flag for quarterly data
                         if ((ob.Key - lastDate).TotalDays > 31)
                         {
-                            WriteLine((ob.Key - lastDate).TotalDays);
+                            //WriteLine((ob.Key - lastDate).TotalDays);
 
                             //sortedDataList.Add(dataNames[dataCounter], new SortedList<DateTime, double?>(list.ToDictionary(x => x.Date, x => x.Value)));
                             //Collection was modified after the enumerator was instantiated
@@ -173,10 +194,10 @@ namespace FredAPI
 
                             //holder.Add(lastDate.AddMonths(2), lastValue);
 
-                            WriteLine("FillInDates!");
-                            WriteLine(lastDate.AddMonths(1));
-                            WriteLine(lastDate.AddMonths(2));
-                            WriteLine(lastValue.ToString());
+                            //WriteLine("FillInDates!");
+                            //WriteLine(lastDate.AddMonths(1));
+                            //WriteLine(lastDate.AddMonths(2));
+                            //WriteLine(lastValue.ToString());
                         }
 
                     }
@@ -251,14 +272,14 @@ namespace FredAPI
             foreach (var ob in minDates)
             {
 
-                Console.WriteLine(ob.ToShortDateString());
+                //Console.WriteLine(ob.ToShortDateString());
 
             }
             //Console.WriteLine("Max dates");
             foreach (var ob in maxDates)
             {
 
-                Console.WriteLine(ob.ToShortDateString());
+                //Console.WriteLine(ob.ToShortDateString());
 
             }
 
@@ -310,13 +331,13 @@ namespace FredAPI
                 {
                     if (obList.Key < lowestDate2)
                     {
-                        WriteLine("holderBelowValue");
+                        //WriteLine("holderBelowValue");
                         holder.Add(obList.Key, obList.Value);
 
                     }
                     if (obList.Key > highestDate2)
                     {
-                        WriteLine("holderBelowValue");
+                        //WriteLine("holderBelowValue");
                         holder.Add(obList.Key, obList.Value);
 
                     }
@@ -325,9 +346,9 @@ namespace FredAPI
                     
                     foreach (var holdList in holder)
                     {
-                        WriteLine("holder");
-                        WriteLine(holdList.Key.ToString());
-                        WriteLine(holdList.Value.ToString());
+                        //WriteLine("holder");
+                        //WriteLine(holdList.Key.ToString());
+                        //WriteLine(holdList.Value.ToString());
                     }
 
                 }
@@ -414,13 +435,13 @@ namespace FredAPI
                 
                 var series = fred.GetSeries("GDPC1");
                 var units = series.Units;
-                Console.WriteLine("Units: ");
-                Console.WriteLine(units);
+                //Console.WriteLine("Units: ");
+                //Console.WriteLine(units);
 
                 //string resultString = Regex.Match(units, @"\d+").Value;
                 deflateYear = extractNumber(series.Units);
 
-                Console.WriteLine(deflateYear.ToString());
+                Console.WriteLine("deflate year: {0}", deflateYear.ToString());
 
             }
 
@@ -439,7 +460,7 @@ namespace FredAPI
             }
 
             //print data before changes
-            PrintData(sortedDataList);
+            //PrintData(sortedDataList);
 
             //identify minmax dates, and trim list
             MinMaxDates(ref sortedDataList);
@@ -448,16 +469,14 @@ namespace FredAPI
             //ideally might want to have this second.
             FillInGaps(ref sortedDataList);
             
-            PrintData(sortedDataList);
+            //PrintData(sortedDataList);
 
             //deInflate
 
             deInflate(ref sortedDataList, deflateYear);
 
             PrintData(sortedDataList);
-
-
-
+            
         }
 
     }
