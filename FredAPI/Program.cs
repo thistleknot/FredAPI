@@ -33,6 +33,7 @@ namespace FredAPI
 
         }
 
+        //assumes the dates are the same across each data series
         static void PrintData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
             //"rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries"
@@ -40,10 +41,69 @@ namespace FredAPI
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
             WriteLine("rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
+
             foreach (DateTime date in dates)
             {
                 WriteLine("{0},{1},{2},{3},{4},{5},{6}", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
 
+            }
+
+        }
+
+        static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
+        {
+            int arraySize = dataDictionary["pSaveRate"].Count;
+
+            string entry;
+            string entry2;
+            int slidingWindowSize = 6;
+            int numSlidingWindows;
+
+            int slidingWindow = 6;
+            int numSlides;
+
+            IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
+
+            WriteLine("# of Dates (i.e. months): {0} ", arraySize);
+            WriteLine("How many dates per sliding window? [Default is 6]: ", arraySize);
+            entry = ReadLine();
+            WriteLine("How many slides per window? [Default is 6]: ");
+            entry2 = ReadLine();
+
+
+            if (entry != "")
+            {
+                slidingWindowSize = Int32.Parse(entry);
+            }
+            else
+            {
+                //keep default
+            }
+            //startYear = Convert.ToInt32(entry);
+
+            numSlidingWindows = arraySize - slidingWindowSize;
+
+            //in
+            for (int i = 0; i < numSlidingWindows; ++i)
+            {
+                WriteLine("Sliding Segment #: {0}", i);
+
+                //inputs, hidden, output
+                WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7 );
+
+                Write("In: ");
+                for (int p = 0; p < slidingWindowSize; p++)
+                {
+
+                    Write("In: {0},{1},{2},{3},{4},{5},{6}", dates[i + p].ToShortDateString(), dataDictionary["rGDP"][dates[i + p]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p]].Value.ToString());
+
+                }
+                WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + slidingWindowSize]].Value.ToString());
+                //WriteLine();
+
+                //out
+                //WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + parseData + 1]].Value.ToString());
+                //WriteLine();
             }
 
         }
@@ -305,7 +365,7 @@ namespace FredAPI
                 // remove from data here using holder, this removes it from list, but not SortedList?
                 foreach (var temp in holder)
                 {
-                    list.Remove(temp.Key);
+                    //list.Remove(temp.Key);
                     obData.Value.Remove(temp.Key);
 
                 }
@@ -340,7 +400,7 @@ namespace FredAPI
             entry = ReadLine();
             startMonth = Convert.ToInt32(entry);
 
-            Write("Enter end month, ex. Jan = 1, Octoboer = 10: ");
+            Write("Enter end month, ex. Jan = 1, October = 10: ");
             entry = ReadLine();
             endMonth = Convert.ToInt32(entry);
 
@@ -426,7 +486,9 @@ namespace FredAPI
             deInflate(ref sortedDataList, deflateYear);
 
             PrintData(sortedDataList);
-            
+
+            parseData(sortedDataList);
+
         }
 
     }
