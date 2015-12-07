@@ -51,8 +51,7 @@ namespace FredAPI
         //actually I can, I just can't use a foreach... duh
         static void FillInGaps(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
-            
-
+           
             //some bullshit date, gets overwritten after counter > 0
             DateTime lastDate = new DateTime(1776, 1, 1);
             double? lastValue = 0;
@@ -75,7 +74,6 @@ namespace FredAPI
 
                 var holder = new SortedList<DateTime, double?> { };
 
-
                 foreach (var ob in list)
                 {
                     
@@ -85,7 +83,6 @@ namespace FredAPI
                         if ((ob.Key - lastDate).TotalDays > 31)
                         {
                             WriteLine((ob.Key - lastDate).TotalDays);
-
 
                             //sortedDataList.Add(dataNames[dataCounter], new SortedList<DateTime, double?>(list.ToDictionary(x => x.Date, x => x.Value)));
                             //Collection was modified after the enumerator was instantiated
@@ -97,14 +94,13 @@ namespace FredAPI
 
                             //holder.Add(lastDate.AddMonths(2), lastValue);
 
-                            WriteLine("Dates!");
+                            WriteLine("FillInDates!");
                             WriteLine(lastDate.AddMonths(1));
                             WriteLine(lastDate.AddMonths(2));
                             WriteLine(lastValue.ToString());
                         }
 
                     }
-                    
                     
                     lastDate = ob.Key;
                     lastValue = ob.Value;
@@ -121,8 +117,9 @@ namespace FredAPI
             }
 
         }
-        
-        static void MinMaxDates(ref Dictionary<string, IList<Observation>> data)
+
+        //static void MinMaxDates(ref Dictionary<string, IList<Observation>> data)
+        static void MinMaxDates(ref Dictionary<string, SortedList<DateTime, double?>> data)
         {
 
             DateTime[] minDates = new DateTime[data.Count];
@@ -143,22 +140,22 @@ namespace FredAPI
                 {
                     if (lowestDate == new DateTime(1600, 1, 1))
                     {
-                        lowestDate = ob.Date;
+                        lowestDate = ob.Key;
                     }
 
                     if (highestDate == new DateTime(1600, 1, 1))
                     {
-                        highestDate = ob.Date;
+                        highestDate = ob.Key;
                     }
 
-                    if (ob.Date < lowestDate)
+                    if (ob.Key < lowestDate)
                     {
-                        lowestDate = ob.Date;
+                        lowestDate = ob.Key;
                     }
 
-                    if (ob.Date > highestDate)
+                    if (ob.Key > highestDate)
                     {
-                        highestDate = ob.Date;
+                        highestDate = ob.Key;
                     }
 
                 }
@@ -222,7 +219,6 @@ namespace FredAPI
             Console.WriteLine(lowestDate2.ToShortDateString());
             Console.WriteLine("Max Date:");
             Console.WriteLine(highestDate2.ToShortDateString());
-
             
             //var holder = new Dictionary<string, IList<Observation>> { };
 
@@ -233,21 +229,24 @@ namespace FredAPI
                 var holder = new SortedList<DateTime, double?> { };
                 foreach (var obList in list)
                 {
-                    if (obList.Date < lowestDate2)
+                    if (obList.Key < lowestDate2)
                     {
-                        holder.Add(obList.Date, obList.Value);
+                        WriteLine("holderBelowValue");
+                        holder.Add(obList.Key, obList.Value);
 
                     }
-                    if (obList.Date > highestDate2)
+                    if (obList.Key > highestDate2)
                     {
-                        holder.Add(obList.Date, obList.Value);
+                        WriteLine("holderBelowValue");
+                        holder.Add(obList.Key, obList.Value);
 
                     }
 
                     //print holder
-
-                foreach (var holdList in holder)
+                    
+                    foreach (var holdList in holder)
                     {
+                        WriteLine("holder");
                         WriteLine(holdList.Key.ToString());
                         WriteLine(holdList.Value.ToString());
                     }
@@ -255,12 +254,13 @@ namespace FredAPI
                 }
                 // remove from data here using holder
 
+                foreach (var temp in holder)
+                {
+                    list.Remove(temp.Key);
+                    
+                }
+
             }
-
-
-
-
-
 
         }
 
@@ -341,7 +341,7 @@ namespace FredAPI
 
             }
 
-            MinMaxDates(ref data);
+            //MinMaxDates(ref data);
 
             //convert data to sortedList (the DateTime becomes key of the SortedList), the string is the Key of the Dictionary.
             var sortedDataList = new Dictionary<string, SortedList<DateTime, double?>> { };
@@ -357,6 +357,8 @@ namespace FredAPI
 
             //print data
             PrintData(sortedDataList);
+
+            MinMaxDates(ref sortedDataList);
 
             //insert records into rGDP
             //ideally might want to have this second.
