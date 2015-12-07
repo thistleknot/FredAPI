@@ -122,8 +122,147 @@ namespace FredAPI
 
         }
         
+        static void MinMaxDates(ref Dictionary<string, IList<Observation>> data)
+        {
+
+            DateTime[] minDates = new DateTime[data.Count];
+            DateTime[] maxDates = new DateTime[data.Count];
+
+            int counter = 0;
+
+            foreach (var obData in data)
+            {
+                DateTime lowestDate = new DateTime(1600, 1, 1);
+                DateTime highestDate = new DateTime(1600, 1, 1);
+
+                WriteLine(obData.Key);
+                var list = obData.Value;
+
+                //the reason date works here is because the object type has two elements.  A .Date and a .Value
+                foreach (var ob in list)
+                {
+                    if (lowestDate == new DateTime(1600, 1, 1))
+                    {
+                        lowestDate = ob.Date;
+                    }
+
+                    if (highestDate == new DateTime(1600, 1, 1))
+                    {
+                        highestDate = ob.Date;
+                    }
+
+                    if (ob.Date < lowestDate)
+                    {
+                        lowestDate = ob.Date;
+                    }
+
+                    if (ob.Date > highestDate)
+                    {
+                        highestDate = ob.Date;
+                    }
+
+                }
+                //Console.WriteLine(lowestDate.ToShortDateString());
+                //Console.WriteLine(highestDate.ToShortDateString());
+
+                minDates[counter] = lowestDate;
+                maxDates[counter] = highestDate;
+
+                counter++;
+            }
+
+            //Console.WriteLine("Min dates");
+            foreach (var ob in minDates)
+            {
+
+                Console.WriteLine(ob.ToShortDateString());
+
+            }
+            //Console.WriteLine("Max dates");
+            foreach (var ob in maxDates)
+            {
+
+                Console.WriteLine(ob.ToShortDateString());
+
+            }
+
+            DateTime lowestDate2 = new DateTime(1600, 1, 1);
+            DateTime highestDate2 = new DateTime(1600, 1, 1);
+
+            foreach (var ob in minDates)
+            {
+                if (lowestDate2 == new DateTime(1600, 1, 1))
+                {
+                    lowestDate2 = ob.Date;
+                }
+
+                if (ob.Date > lowestDate2)
+                {
+                    lowestDate2 = ob.Date;
+                }
+
+            }
+
+            foreach (var ob in maxDates)
+            {
+
+                if (highestDate2 == new DateTime(1600, 1, 1))
+                {
+                    highestDate2 = ob.Date;
+                }
+
+                if (ob.Date < highestDate2)
+                {
+                    highestDate2 = ob.Date;
+                }
+
+            }
+
+            Console.WriteLine("Min Date:");
+            Console.WriteLine(lowestDate2.ToShortDateString());
+            Console.WriteLine("Max Date:");
+            Console.WriteLine(highestDate2.ToShortDateString());
+
+            
+            //var holder = new Dictionary<string, IList<Observation>> { };
+
+            //trim
+            foreach (var obData in data)
+            {
+                var list = obData.Value;
+                var holder = new SortedList<DateTime, double?> { };
+                foreach (var obList in list)
+                {
+                    if (obList.Date < lowestDate2)
+                    {
+                        holder.Add(obList.Date, obList.Value);
+
+                    }
+                    if (obList.Date > highestDate2)
+                    {
+                        holder.Add(obList.Date, obList.Value);
+
+                    }
+
+                    //print holder
+
+                foreach (var holdList in holder)
+                    {
+                        WriteLine(holdList.Key.ToString());
+                        WriteLine(holdList.Value.ToString());
+                    }
+
+                }
+                // remove from data here using holder
+
+            }
 
 
+
+
+
+
+        }
 
         static void Main(string[] args)
         {
@@ -202,103 +341,7 @@ namespace FredAPI
 
             }
 
-            DateTime[] minDates = new DateTime[data.Count];
-            DateTime[] maxDates = new DateTime[data.Count];
-
-            int counter = 0;
-
-            foreach (var obData in data)
-            {
-                DateTime lowestDate = new DateTime(1600, 1, 1);
-                DateTime highestDate = new DateTime(1600, 1, 1);
-
-                WriteLine(obData.Key);
-                var list = obData.Value;
-                
-                //the reason date works here is because the object type has two elements.  A .Date and a .Value
-                foreach (var ob in list)
-                {
-                    if (lowestDate == new DateTime(1600,1,1))
-                    {
-                        lowestDate = ob.Date;
-                    }
-
-                    if (highestDate == new DateTime(1600,1,1))
-                    {
-                        highestDate = ob.Date;
-                    }
-
-                    if (ob.Date < lowestDate)
-                    {
-                        lowestDate = ob.Date;
-                    }
-
-                    if (ob.Date > highestDate)
-                    {
-                        highestDate = ob.Date;
-                    }
-
-                }
-                //Console.WriteLine(lowestDate.ToShortDateString());
-                //Console.WriteLine(highestDate.ToShortDateString());
-
-                minDates[counter] = lowestDate;
-                maxDates[counter] = highestDate;
-
-                counter++;
-            }
-
-            //Console.WriteLine("Min dates");
-            foreach (var ob in minDates)
-            {
-                
-                Console.WriteLine(ob.ToShortDateString());
-                
-            }
-            //Console.WriteLine("Max dates");
-            foreach (var ob in maxDates)
-            {
-                
-                Console.WriteLine(ob.ToShortDateString());
-
-            }
-
-            DateTime lowestDate2 = new DateTime(1600, 1, 1);
-            DateTime highestDate2 = new DateTime(1600, 1, 1);
-
-            foreach (var ob in minDates)
-            {
-                if (lowestDate2 == new DateTime(1600, 1, 1))
-                {
-                    lowestDate2 = ob.Date;
-                }
-
-                if (ob.Date > lowestDate2)
-                {
-                    lowestDate2 = ob.Date;
-                }
-
-            }
-
-            foreach (var ob in maxDates)
-            {
-                
-                if (highestDate2 == new DateTime(1600, 1, 1))
-                {
-                    highestDate2 = ob.Date;
-                }
-
-                if (ob.Date < highestDate2)
-                {
-                    highestDate2 = ob.Date;
-                }
-
-            }
-
-            Console.WriteLine("Min Date:");
-            Console.WriteLine(lowestDate2.ToShortDateString());
-            Console.WriteLine("Max Date:");
-            Console.WriteLine(highestDate2.ToShortDateString());
+            MinMaxDates(ref data);
 
             //convert data to sortedList (the DateTime becomes key of the SortedList), the string is the Key of the Dictionary.
             var sortedDataList = new Dictionary<string, SortedList<DateTime, double?>> { };
@@ -316,6 +359,7 @@ namespace FredAPI
             PrintData(sortedDataList);
 
             //insert records into rGDP
+            //ideally might want to have this second.
             FillInGaps(ref sortedDataList);
             
             //some bullshit date, gets overwritten after counter > 0
