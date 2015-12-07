@@ -47,6 +47,85 @@ namespace FredAPI
             }
         }
 
+        static void deInflate(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary, int year)
+        {
+
+            int counter = 0;
+            double? priceRunningTotal = 0.0;
+            double? CPIRunningTotal = 0.0;
+            double? averagePrice = 0.0;
+            double? averageCPI = 0.0;
+
+            //need to definflate SPCS20RSA based on CPI
+            foreach (var place in dataDictionary["housingSeries"])
+            {
+                DateTime temp = place.Key;
+
+                int shortDate = temp.Year;
+
+                if (place.Key.Year == year)
+                {
+                    priceRunningTotal += place.Value;
+                    counter++;
+                    WriteLine(shortDate);
+                    WriteLine(priceRunningTotal);
+
+                }
+
+            }
+            averagePrice = (priceRunningTotal / counter);
+
+            //reset counter
+            counter = 0;
+
+            //need to definflate SPCS20RSA based on CPI
+            foreach (var place in dataDictionary["consPriceIndex"])
+            {
+                DateTime temp = place.Key;
+
+                int shortDate = temp.Year;
+
+                if (place.Key.Year == year)
+                {
+                    CPIRunningTotal += place.Value;
+                    counter++;
+                    WriteLine(shortDate);
+                    WriteLine(CPIRunningTotal);
+
+                }
+
+            }
+            averageCPI = (CPIRunningTotal / counter);
+
+            WriteLine("averagePrice: {0}", averagePrice);
+
+            WriteLine("averageCPI: {0}", averageCPI);
+
+            //deInflate housing
+
+            var keys = new List<DateTime>(dataDictionary["housingSeries"].Keys);
+
+            //values are read only
+            //foreach (var place in dataDictionary["consPriceIndex"])
+            foreach (DateTime key in keys)
+            {
+                
+
+                double? divisor = averagePrice / dataDictionary["housingSeries"][key].Value;
+
+                double? divided = dataDictionary["housingSeries"][key].Value / divisor;
+
+                double? factor = dataDictionary["consPriceIndex"][key] / averageCPI;
+
+                double? newValue = divided * factor;
+                //WriteLine(dataDictionary["housingSeries"][key].ToString());
+                //WriteLine("{0} {1} {2} {3} {4}", key, dataDictionary["housingSeries"][key].ToString(), divisor, divided, newValue);
+                dataDictionary["housingSeries"][key] = newValue;
+
+            }
+
+        }
+
         //can't add elements to dictionary by reference...
         //actually I can, I just can't use a foreach... duh
         static void FillInGaps(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
@@ -299,7 +378,10 @@ namespace FredAPI
 
             //can't use # in GetSeriesObservations.  Ignores the dates.
 
+            //my names
             string[] dataNames = new string[] { "rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries" };
+
+            //online series names
             string[] obsNames = new string[] { "GDPC1", "PSAVERT", "DFF", "EMRATIO", "UMCSENT", "CP0000USM086NEST", "SPCS20RSA" };
 
             int dataCounter = 0;
@@ -324,6 +406,7 @@ namespace FredAPI
                 dataCounter++;
             };
 
+           //get year of rGDP dollars
            if (data.ContainsKey("rGDP"))
             {
 
@@ -355,20 +438,25 @@ namespace FredAPI
                 dataCounter++;
             }
 
-            //print data
+            //print data before changes
             PrintData(sortedDataList);
 
+            //identify minmax dates, and trim list
             MinMaxDates(ref sortedDataList);
 
-            //insert records into rGDP
+            //insert records (into rGDP)
             //ideally might want to have this second.
             FillInGaps(ref sortedDataList);
             
-            //some bullshit date, gets overwritten after counter > 0
-            DateTime lastDate = new DateTime(1776, 1, 1);
-            //double? lastValue = 0;
+            PrintData(sortedDataList);
+
+            //deInflate
+
+            deInflate(ref sortedDataList, deflateYear);
 
             PrintData(sortedDataList);
+
+
 
         }
 
