@@ -37,35 +37,15 @@ namespace FredAPI
         {
             //"rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries"
 
-            IList<DateTime> dates = dataDictionary["rGDP"].Keys.ToList();
-            //IList<double?> rGDP = dataDictionary["rGDP"].;
-            /*
-            IList<double?> pSaveRate;
-            IList<double?> fedFundRate;
-            IList<double?> empPopRatio;
-            IList<double?> consConfIndex;
-            IList<double?> housingSeries;
-            */
-            //IList <DateTime> = dataDictionary[]
+            IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
+            WriteLine("rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
             foreach (DateTime date in dates)
             {
-                WriteLine("{0}, {1}, {2}, {3}, {4}, {5}, {6}", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
+                WriteLine("{0},{1},{2},{3},{4},{5},{6}", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
 
             }
 
-            /*
-            foreach (var obData in dataDictionary)
-            {
-                WriteLine(obData.Key);
-                var list = obData.Value;
-                foreach (var ob in list)
-                {
-                    //WriteLine("{0}-{1}, {2}", ob.Date.Year, ob.Date.Month, ob.Value);
-                    WriteLine("{0}-{1}, {2}", ob.Key.Year, ob.Key.Month, ob.Value);
-                }
-            }
-            */
         }
 
         static void deInflate(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary, int year)
@@ -130,7 +110,6 @@ namespace FredAPI
             //foreach (var place in dataDictionary["consPriceIndex"])
             foreach (DateTime key in keys)
             {
-                
 
                 double? divisor = averagePrice / dataDictionary["housingSeries"][key].Value;
 
@@ -192,12 +171,6 @@ namespace FredAPI
                             holder.Add(lastDate.AddMonths(1), (ob.Value + lastValue)/2);
                             holder.Add(lastDate.AddMonths(2), (ob.Value + lastValue)/2);
 
-                            //holder.Add(lastDate.AddMonths(2), lastValue);
-
-                            //WriteLine("FillInDates!");
-                            //WriteLine(lastDate.AddMonths(1));
-                            //WriteLine(lastDate.AddMonths(2));
-                            //WriteLine(lastValue.ToString());
                         }
 
                     }
@@ -268,21 +241,6 @@ namespace FredAPI
                 counter++;
             }
 
-            //Console.WriteLine("Min dates");
-            foreach (var ob in minDates)
-            {
-
-                //Console.WriteLine(ob.ToShortDateString());
-
-            }
-            //Console.WriteLine("Max dates");
-            foreach (var ob in maxDates)
-            {
-
-                //Console.WriteLine(ob.ToShortDateString());
-
-            }
-
             DateTime lowestDate2 = new DateTime(1600, 1, 1);
             DateTime highestDate2 = new DateTime(1600, 1, 1);
 
@@ -331,33 +289,25 @@ namespace FredAPI
                 {
                     if (obList.Key < lowestDate2)
                     {
-                        //WriteLine("holderBelowValue");
+                        WriteLine("holderBelowValue: {0}", obList.Key); 
                         holder.Add(obList.Key, obList.Value);
 
                     }
                     if (obList.Key > highestDate2)
                     {
-                        //WriteLine("holderBelowValue");
+                        WriteLine("holderAboveValue: {0}", obList.Key);
                         holder.Add(obList.Key, obList.Value);
 
                     }
 
-                    //print holder
-                    
-                    foreach (var holdList in holder)
-                    {
-                        //WriteLine("holder");
-                        //WriteLine(holdList.Key.ToString());
-                        //WriteLine(holdList.Value.ToString());
-                    }
-
                 }
-                // remove from data here using holder
 
+                // remove from data here using holder, this removes it from list, but not SortedList?
                 foreach (var temp in holder)
                 {
                     list.Remove(temp.Key);
-                    
+                    obData.Value.Remove(temp.Key);
+
                 }
 
             }
@@ -460,15 +410,15 @@ namespace FredAPI
             }
 
             //print data before changes
-            //PrintData(sortedDataList);
-
-            //identify minmax dates, and trim list
-            MinMaxDates(ref sortedDataList);
+            //PrintData(sortedDataList); - will crash now because of gaps in rGDP
 
             //insert records (into rGDP)
             //ideally might want to have this second.
             FillInGaps(ref sortedDataList);
-            
+
+            //identify minmax dates, and trim list, if ran before FillInGaps, rGDP doesn't populate up till HighestDate2
+            MinMaxDates(ref sortedDataList);
+
             //PrintData(sortedDataList);
 
             //deInflate
