@@ -81,29 +81,50 @@ namespace FredAPI
             }
             //startYear = Convert.ToInt32(entry);
 
+            if (entry2 != "")
+            {
+                slidingWindow = Int32.Parse(entry2);
+            }
+            else
+            {
+                //keep default
+            }
+            //startYear = Convert.ToInt32(entry);
+
             numSlidingWindows = arraySize - slidingWindowSize;
+            numSlides = numSlidingWindows - slidingWindow;
 
             //in
-            for (int i = 0; i < numSlidingWindows; ++i)
+
+            //for (int i = )
+            for (int i = 0; i < numSlides; ++i)
             {
                 WriteLine("Sliding Segment #: {0}", i);
-
                 //inputs, hidden, output
-                WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7 );
+                WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
 
-                Write("In: ");
-                for (int p = 0; p < slidingWindowSize; p++)
+                for (int q = 0; q < slidingWindowSize; q++)
                 {
 
-                    Write("In: {0},{1},{2},{3},{4},{5},{6}", dates[i + p].ToShortDateString(), dataDictionary["rGDP"][dates[i + p]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p]].Value.ToString());
+                    Write("In: ");
+                    for (int p = 0; p < slidingWindowSize; p++)
+                    {
 
+                        Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + p + q].ToShortDateString(), dataDictionary["rGDP"][dates[i + p]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p]].Value.ToString());
+                        if (p != (slidingWindowSize - 1))
+                        {
+                            Write(",");
+                        }
+
+                    }
+                    WriteLine();
+                    WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + q + slidingWindowSize]].Value.ToString());
+                    //WriteLine();
+
+                    //out
+                    //WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + parseData + 1]].Value.ToString());
+                    //WriteLine();
                 }
-                WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + slidingWindowSize]].Value.ToString());
-                //WriteLine();
-
-                //out
-                //WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + parseData + 1]].Value.ToString());
-                //WriteLine();
             }
 
         }
