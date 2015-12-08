@@ -150,6 +150,7 @@ namespace FredAPI
                                 testFile.Write(" ");
                             }
                         }
+                        //The last training set I should be predicting?  Well... I still need to check against it.
                         testFile.WriteLine();
                         testFile.WriteLine("Out: {0}", dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value.ToString());
                     }
