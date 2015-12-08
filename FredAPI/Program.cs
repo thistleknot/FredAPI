@@ -40,11 +40,11 @@ namespace FredAPI
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
-            WriteLine("rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
+            WriteLine("date,rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
 
             foreach (DateTime date in dates)
             {
-                WriteLine("{0},{1},{2},{3},{4},{5},{6}", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
+                WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
 
             }
 
@@ -516,7 +516,7 @@ namespace FredAPI
             //identify minmax dates, and trim list, if ran before FillInGaps, rGDP doesn't populate up till HighestDate2
             MinMaxDates(ref sortedDataList);
 
-            //PrintData(sortedDataList);
+            PrintData(sortedDataList);
 
             //deInflate
 
