@@ -120,9 +120,9 @@ namespace FredAPI
                         file.Write("In: ");
                         //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
                         for (int p = 0; p < slidingWindows; p++)
-                        {                            
+                        {
                             //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
-                            file.Write("{0} {1} {2} {3} {4} {5} {6}", (dates[i + p + q]-dates[0]).Days, dataDictionary["rGDP"][dates[i + p + q]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + q]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + q]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q]].Value.ToString());
+                            file.Write("{0} {1} {2} {3} {4} {5} {6}", ((1/(1+(double)(dates[i + p + q]-dates[0]).Days))).ToString(".################"), (1/(double)(dataDictionary["rGDP"][dates[i + p + q]].Value)).ToString(".################"), (1/(double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value)).ToString(".################"), (1/(double)dataDictionary["fedFundRate"][dates[i + p + q]].Value).ToString(".################"), (1/(float)(dataDictionary["empPopRatio"][dates[i + p + q]].Value)).ToString(".################"), (1/(float)(dataDictionary["consConfIndex"][dates[i + p + q]].Value)).ToString(".################"), (1/(float)(dataDictionary["housingSeries"][dates[i + p + q]].Value)).ToString(".################"));
                             //space inbetween each write until end of line
                             if (p != (slidingWindows - 1))
                             {
@@ -144,7 +144,7 @@ namespace FredAPI
                         testFile.Write("In: ");
                         for (int q = 0; q < slidingWindowSize; q++)
                         {
-                            testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (dates[i + q + slidingWindows]-dates[0]).Days, dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value.ToString());
+                            testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (1/(float)(1+(dates[i + q + slidingWindows]-dates[0]).Days)).ToString(".################"), (1/(double)(dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value)).ToString(".################"));
                             //space inbetween each write until end of line
                             if (q != (slidingWindowSize - 1))
                             {
@@ -153,7 +153,7 @@ namespace FredAPI
                         }
                         //The last training set I should be predicting?  Well... I still need to check against it.
                         testFile.WriteLine();
-                        testFile.WriteLine("Out: {0}", dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value.ToString());
+                        testFile.WriteLine("Out: {0}", 1/(double)(dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value));
                     }
                     
                 }
