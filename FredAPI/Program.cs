@@ -74,7 +74,6 @@ namespace FredAPI
             WriteLine("How many slides per window? [Default is 6]: ");
             entry2 = ReadLine();
 
-
             if (entry != "")
             {
                 slidingWindowSize = Int32.Parse(entry);
@@ -99,12 +98,14 @@ namespace FredAPI
             numSlides = numSlidingWindows - slidingWindows;
 
             //# of training sets
-            for (int i = 0; i < numSlides - 1; ++i)
+            for (int i = 0; i < numSlides; ++i)
             {
                 String[] slideNames = new String[numSlides];
                 String[] testNames = new String[numSlides];
 
-                slideNames[i] = "SlideSegment" + i + ".txt";
+                //leading zero
+                slideNames[i] = "SlideSegment" + i.ToString("D3") + ".txt";
+
 
                 //training data, slide # is used for file name
                 using (System.IO.StreamWriter file =
@@ -132,9 +133,10 @@ namespace FredAPI
                             file.WriteLine();
                             file.WriteLine("Out: {0}", dataDictionary["housingSeries"][dates[i + q + slidingWindowSize]].Value.ToString());
                     }
-                    
+
                     //non training data for each pass, slide # is used for file name
-                    testNames[i] = "testNames" + i + ".txt";
+                    //leading zero
+                    testNames[i] = "testNames" + i.ToString("D3") + ".txt";
                     using (System.IO.StreamWriter testFile =
                     new System.IO.StreamWriter(testNames[i], true))
                     {
