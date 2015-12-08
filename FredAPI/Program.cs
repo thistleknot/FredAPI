@@ -52,13 +52,17 @@ namespace FredAPI
 
         static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
+            //# of dates
             int arraySize = dataDictionary["pSaveRate"].Count;
 
             string entry;
             string entry2;
+
+            //# of months to feed into input array (1 pass)
             int slidingWindowSize = 6;
             int numSlidingWindows;
 
+            //# of windows in each training batch
             int slidingWindows = 6;
             int numSlides;
 
@@ -94,54 +98,58 @@ namespace FredAPI
             numSlidingWindows = arraySize - slidingWindowSize;
             numSlides = numSlidingWindows - slidingWindows;
 
+            //# of training sets
             for (int i = 0; i < numSlides - 1; ++i)
             {
                 String[] slideNames = new String[numSlides];
                 String[] testNames = new String[numSlides];
 
-                slideNames[i] = "SlidingSegment" + i + ".txt";
+                slideNames[i] = "SlideSegment" + i + ".txt";
 
+                //training data, slide # is used for file name
                 using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(slideNames[i], true))
                 {
-                    //file.WriteLine("Fourth line");
-
                     //inputs, hidden, output
                     file.WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
 
+                    //# of months to feed into input array (1 pass), i.e # of months in 1 window
                     for (int q = 0; q < slidingWindowSize; q++)
                     {
 
                         file.Write("In: ");
+                        //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
                         for (int p = 0; p < slidingWindows; p++)
                         {
-
+                            //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
                             file.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + p + q].ToShortDateString(), dataDictionary["rGDP"][dates[i + p + q]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + q]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + q]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q]].Value.ToString());
                             if (p != (slidingWindows - 1))
                             {
-                                file.Write(",");
+                                file.Write(" ");
                             }
                         }
-
+                            //p is reached, time for output, need to add slidingWindowSize
                             file.WriteLine();
-                            file.WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + q + slidingWindowSize]].Value.ToString());
+                            file.WriteLine("Out: {0}", dataDictionary["housingSeries"][dates[i + q + slidingWindowSize]].Value.ToString());
                     }
+                    
+                    //non training data for each pass, slide # is used for file name
                     testNames[i] = "testNames" + i + ".txt";
                     using (System.IO.StreamWriter testFile =
                     new System.IO.StreamWriter(testNames[i], true))
                     {
                         testFile.WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
                         testFile.Write("In: ");
-                        for (int p = 0; p < slidingWindowSize; p++)
+                        for (int q = 0; q < slidingWindowSize; q++)
                         {
-                            //testFile.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + p + slidingWindowSize].ToShortDateString(), dataDictionary["rGDP"][dates[i + p + slidingWindowSize]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + slidingWindowSize]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + slidingWindowSize]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q + 1]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q + 1]].Value.ToString());
-                            if (p != (slidingWindowSize - 1))
+                            testFile.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + q + slidingWindows].ToShortDateString(), dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value.ToString());
+                            if (q != (slidingWindowSize - 1))
                             {
-                                testFile.Write(",");
+                                testFile.Write(" ");
                             }
                         }
-                        WriteLine();
-                        //testFile.WriteLine("Out: {0}", dataDictionary["rGDP"][dates[i + q + slidingWindowSize + 1]].Value.ToString());
+                        testFile.WriteLine();
+                        testFile.WriteLine("Out: {0}", dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value.ToString());
                     }
 
 
