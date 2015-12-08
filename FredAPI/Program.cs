@@ -106,13 +106,12 @@ namespace FredAPI
                 //leading zero
                 slideNames[i] = "SlideSegment" + i.ToString("D3") + ".txt";
 
-
                 //training data, slide # is used for file name
                 using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(slideNames[i], true))
                 {
                     //inputs, hidden, output
-                    file.WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
+                    file.WriteLine("Topology: {0} {1} 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
 
                     //# of months to feed into input array (1 pass), i.e # of months in 1 window
                     for (int q = 0; q < slidingWindowSize; q++)
@@ -123,7 +122,8 @@ namespace FredAPI
                         for (int p = 0; p < slidingWindows; p++)
                         {
                             //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
-                            file.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + p + q].ToShortDateString(), dataDictionary["rGDP"][dates[i + p + q]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + q]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + q]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q]].Value.ToString());
+                            file.Write("{0} {1} {2} {3} {4} {5} {6}", (dates[i + p + q]-dates[0]).Days, dataDictionary["rGDP"][dates[i + p + q]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + q]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + q]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q]].Value.ToString());
+                            //space inbetween each write until end of line
                             if (p != (slidingWindows - 1))
                             {
                                 file.Write(" ");
@@ -140,11 +140,12 @@ namespace FredAPI
                     using (System.IO.StreamWriter testFile =
                     new System.IO.StreamWriter(testNames[i], true))
                     {
-                        testFile.WriteLine("Topology: {0}, {1}, 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
+                        testFile.WriteLine("Topology: {0} {1} 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
                         testFile.Write("In: ");
                         for (int q = 0; q < slidingWindowSize; q++)
                         {
-                            testFile.Write("{0},{1},{2},{3},{4},{5},{6}", dates[i + q + slidingWindows].ToShortDateString(), dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value.ToString());
+                            testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (dates[i + q + slidingWindows]-dates[0]).Days, dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value.ToString(), dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value.ToString());
+                            //space inbetween each write until end of line
                             if (q != (slidingWindowSize - 1))
                             {
                                 testFile.Write(" ");
@@ -154,9 +155,7 @@ namespace FredAPI
                         testFile.WriteLine();
                         testFile.WriteLine("Out: {0}", dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value.ToString());
                     }
-
-
-
+                    
                 }
             }
 
@@ -184,7 +183,6 @@ namespace FredAPI
                     counter++;
                     //WriteLine(shortDate);
                     //WriteLine(priceRunningTotal);
-
                 }
 
             }
@@ -206,7 +204,6 @@ namespace FredAPI
                     counter++;
                     //WriteLine(shortDate);
                     //WriteLine(CPIRunningTotal);
-
                 }
 
             }
@@ -235,9 +232,7 @@ namespace FredAPI
                 //WriteLine(dataDictionary["housingSeries"][key].ToString());
                 //WriteLine("{0} {1} {2} {3} {4}", key, dataDictionary["housingSeries"][key].ToString(), divisor, divided, newValue);
                 dataDictionary["housingSeries"][key] = newValue;
-
             }
-
         }
 
         //can't add elements to dictionary by reference...
@@ -250,7 +245,6 @@ namespace FredAPI
             double? lastValue = 0;
 
             //for each FredObject
-
 
             foreach (var obData in dataDictionary)
             //while (dataDictionary.count > 0)
@@ -284,9 +278,7 @@ namespace FredAPI
                             //I could modify this for the # of days in the month, doa  weighted sum
                             holder.Add(lastDate.AddMonths(1), (ob.Value + lastValue)/2);
                             holder.Add(lastDate.AddMonths(2), (ob.Value + lastValue)/2);
-
                         }
-
                     }
                     
                     lastDate = ob.Key;
@@ -298,11 +290,8 @@ namespace FredAPI
                 foreach (var ob in holder)
                 {
                     list.Add(ob.Key, ob.Value);
-
                 }
-
             }
-
         }
 
         //static void MinMaxDates(ref Dictionary<string, IList<Observation>> data)
@@ -411,9 +400,7 @@ namespace FredAPI
                     {
                         WriteLine("holderAboveValue: {0}", obList.Key);
                         holder.Add(obList.Key, obList.Value);
-
                     }
-
                 }
 
                 // remove from data here using holder, this removes it from list, but not SortedList?
@@ -421,11 +408,8 @@ namespace FredAPI
                 {
                     //list.Remove(temp.Key);
                     obData.Value.Remove(temp.Key);
-
-                }
-
+                }            
             }
-
         }
 
         static void Main(string[] args)
@@ -481,7 +465,6 @@ namespace FredAPI
                 if (dataNames[dataCounter] == "rGDP")
                 {
                     data.Add(dataNames[dataCounter], fred.GetSeriesObservations(obsNames[dataCounter], startDate, endDate).ToList());
-
                 }
                 else
                 {
@@ -546,6 +529,5 @@ namespace FredAPI
         }
 
     }
-
 
 }
