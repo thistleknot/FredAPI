@@ -120,7 +120,7 @@ namespace FredAPI
                         file.Write("In: ");
                         //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
                         for (int p = 0; p < slidingWindows; p++)
-                        {
+                        {                            
                             //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
                             file.Write("{0} {1} {2} {3} {4} {5} {6}", (dates[i + p + q]-dates[0]).Days, dataDictionary["rGDP"][dates[i + p + q]].Value.ToString(), dataDictionary["pSaveRate"][dates[i + p + q]].Value.ToString(), dataDictionary["fedFundRate"][dates[i + p + q]].Value.ToString(), dataDictionary["empPopRatio"][dates[i + p + q]].Value.ToString(), dataDictionary["consConfIndex"][dates[i + p + q]].Value.ToString(), dataDictionary["housingSeries"][dates[i + p + q]].Value.ToString());
                             //space inbetween each write until end of line
