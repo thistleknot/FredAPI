@@ -51,7 +51,6 @@ namespace FredAPI
             foreach (DateTime date in dates)
             {
                 WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
-
             }
 
         }
@@ -80,7 +79,10 @@ namespace FredAPI
 
             //# of windows in each training batch
             int slidingWindows = 6;
+
+            //# of files outputted
             int numSlides;
+
             Random rnd = new Random();
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
@@ -197,11 +199,11 @@ namespace FredAPI
                         //7 = a formula
                         testFile.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindows), numOutputs);
                         testFile.Write("in: ");
-                        for (int q = 0; q < slidingWindowSize; q++)
+                        for (int q = 0; q < slidingWindows/*slidingWindowSize*/; q++)
                         {
                             testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((double)(1+(dates[i + q + slidingWindows]-dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value))).ToString(".################"));
                             //space inbetween each write until end of line
-                            if (q != (slidingWindowSize - 1))
+                            if (q != (slidingWindows - 1))
                             {
                                 testFile.Write(" ");
                             }
