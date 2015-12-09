@@ -57,14 +57,25 @@ namespace FredAPI
 
             string entry;
             string entry2;
+            string entry3;
+            string entry4;
 
             //# of months to feed into input array (1 pass)
             int slidingWindowSize = 6;
             int numSlidingWindows;
+            int duplication = (int)(Math.Ceiling((double)(2000 / slidingWindowSize)));
+
+            bool randomize = false;
+
+            //-1 because date is the key of each dataDictionary entry
+            //+1 because consumerPriceIndex is used for deinflation only.
+            //dataDictionary gets +1 for bias neuron?
+            int numOutputs = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1));
 
             //# of windows in each training batch
             int slidingWindows = 6;
             int numSlides;
+            Random rnd = new Random();
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
@@ -73,6 +84,10 @@ namespace FredAPI
             entry = ReadLine();
             WriteLine("How many slides per window? [Default is 6]: ");
             entry2 = ReadLine();
+            WriteLine("Duplication Base [2000] How much duplication? [Base/(dates per sliding window[6]))]: ");
+            entry3 = ReadLine();
+            WriteLine("Randomize (y) or (n) ?:");
+            entry4 = ReadLine();           
 
             if (entry != "")
             {
@@ -94,6 +109,21 @@ namespace FredAPI
             }
             //startYear = Convert.ToInt32(entry);
 
+            if (entry3 != "")
+            {
+                duplication = (int)(Math.Ceiling((double)(Int32.Parse(entry3) / slidingWindowSize)));
+            }
+            else
+            {
+                //keep default
+            }
+            //startYear = Convert.ToInt32(entry);
+
+            if (entry4 != "n")
+            {
+                randomize = true;
+            }
+
             numSlidingWindows = arraySize - slidingWindowSize;
             numSlides = numSlidingWindows - slidingWindows;
 
@@ -111,27 +141,41 @@ namespace FredAPI
                     new System.IO.StreamWriter(slideNames[i], true))
                 {
                     //inputs, hidden, output
-                    file.WriteLine("Topology: {0} {1} 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
+                    file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numOutputs);
 
-                    //# of months to feed into input array (1 pass), i.e # of months in 1 window
-                    for (int q = 0; q < slidingWindowSize; q++)
+                    for (int d = 0; d < duplication; d++)
                     {
-
-                        file.Write("In: ");
-                        //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
-                        for (int p = 0; p < slidingWindows; p++)
+                        //# of months to feed into input array (1 pass), i.e # of months in 1 window
+                        for (int q = 0; q < slidingWindowSize; q++)
                         {
-                            //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
-                            file.Write("{0} {1} {2} {3} {4} {5} {6}", ((1/(1+(double)(dates[i + p + q]-dates[0]).Days))).ToString(".################"), (1/(double)(dataDictionary["rGDP"][dates[i + p + q]].Value)).ToString(".################"), (1/(double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value)).ToString(".################"), (1/(double)dataDictionary["fedFundRate"][dates[i + p + q]].Value).ToString(".################"), (1/(double)(dataDictionary["empPopRatio"][dates[i + p + q]].Value)).ToString(".################"), (1/(double)(dataDictionary["consConfIndex"][dates[i + p + q]].Value)).ToString(".################"), (1/(double)(dataDictionary["housingSeries"][dates[i + p + q]].Value)).ToString(".################"));
-                            //space inbetween each write until end of line
-                            if (p != (slidingWindows - 1))
+
+                            file.Write("in: ");
+                            //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
+
+                            for (int p = 0; p < slidingWindows; p++)
                             {
-                                file.Write(" ");
+                                
+                                int holder = q;
+                                if(randomize)
+                                {
+                                    q = rnd.Next(0, slidingWindowSize);
+                                    //Write(q);
+                                }
+                                //Write(q);
+                                //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
+                                file.Write("{0} {1} {2} {3} {4} {5} {6}", ((1 / (1 + (double)(dates[i + p + q] - dates[0]).Days))).ToString(".################"), (1 / (double)(dataDictionary["rGDP"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)dataDictionary["fedFundRate"][dates[i + p + q]].Value).ToString(".################"), (1 / (double)(dataDictionary["empPopRatio"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["consConfIndex"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["housingSeries"][dates[i + p + q]].Value)).ToString(".################"));
+                                //space inbetween each write until end of line
+                                if (p != (slidingWindows - 1))
+                                {
+                                    file.Write(" ");
+                                }
+                                q = holder;
                             }
-                        }
                             //p is reached, time for output, need to add slidingWindowSize
                             file.WriteLine();
-                            file.WriteLine("Out: {0}", (1/((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindowSize]].Value))).ToString(".################"));
+                            file.WriteLine("out: {0}", (1 / ((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindowSize]].Value))).ToString(".################"));
+
+                        }
                     }
 
                     //non training data for each pass, slide # is used for file name
@@ -140,8 +184,9 @@ namespace FredAPI
                     using (System.IO.StreamWriter testFile =
                     new System.IO.StreamWriter(testNames[i], true))
                     {
-                        testFile.WriteLine("Topology: {0} {1} 1", ((dataDictionary.Count - 1) * slidingWindowSize), 7);
-                        testFile.Write("In: ");
+                        //7 = a formula
+                        testFile.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numOutputs);
+                        testFile.Write("in: ");
                         for (int q = 0; q < slidingWindowSize; q++)
                         {
                             testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (1/(double)(1+(dates[i + q + slidingWindows]-dates[0]).Days)).ToString(".################"), (1/(double)(dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value)).ToString(".################"));
@@ -153,7 +198,7 @@ namespace FredAPI
                         }
                         //The last training set I should be predicting?  Well... I still need to check against it.
                         testFile.WriteLine();
-                        testFile.WriteLine("Out: {0}", (1/((double)((dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value)))).ToString(".################"));
+                        testFile.WriteLine("out: {0}", (1/((double)((dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value)))).ToString(".################"));
                     }
                     
                 }
@@ -161,6 +206,7 @@ namespace FredAPI
 
         }
 
+        //to deinflate must pick range of years GDP is based on
         static void deInflate(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary, int year)
         {
 
@@ -430,7 +476,8 @@ namespace FredAPI
             entry = ReadLine();
             startYear = Convert.ToInt32(entry);
 
-            Write("Enter end year, ex. 2015: ");
+            WriteLine("Enter end year, ex. 2015: ");
+            Write("years must cover rGDP real year to deinflate: ");
             entry = ReadLine();
             endYear = Convert.ToInt32(entry);
 
