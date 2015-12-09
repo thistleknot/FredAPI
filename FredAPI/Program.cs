@@ -33,9 +33,10 @@ namespace FredAPI
 
         }
 
-        double reciprocal(double value)
+        static double reciprocal(double value)
         {
             return (1 / value);
+            //return (value);
         }
 
         //assumes the dates are the same across each data series
@@ -141,14 +142,14 @@ namespace FredAPI
                 String[] testNames = new String[numSlides];
 
                 //leading zero
-                slideNames[i] = "SlideSegment" + i.ToString("D3") + ".txt";
+                slideNames[i] = "train" + i.ToString("D3") + ".txt";
 
                 //training data, slide # is used for file name
                 using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(slideNames[i], true))
                 {
                     //inputs, hidden, output
-                    file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numOutputs);
+                    file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindows), numOutputs);
 
                     for (int d = 0; d < duplication; d++)
                     {
@@ -168,44 +169,37 @@ namespace FredAPI
                                     q = rnd.Next(0, slidingWindowSize);
                                     //Write(q);
                                 }
-                                try
-                                {
+
                                     //Write(q);
                                     //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
-                                    file.Write("{0} {1} {2} {3} {4} {5} {6}", ((1 / (1 + (double)(dates[i + p + q] - dates[0]).Days))).ToString(".################"), (1 / (double)(dataDictionary["rGDP"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)dataDictionary["fedFundRate"][dates[i + p + q]].Value).ToString(".################"), (1 / (double)(dataDictionary["empPopRatio"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["consConfIndex"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["housingSeries"][dates[i + p + q]].Value)).ToString(".################"));
+                                    file.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal( (1 + (double)(dates[i + p + q] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)dataDictionary["fedFundRate"][dates[i + p + q]].Value)).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[i + p + q]].Value))).ToString(".################"));
                                     //space inbetween each write until end of line
                                     if (p != (slidingWindows - 1))
                                     {
                                         file.Write(" ");
                                     }
                                     q = holder;
-                                }
-                                catch (Exception e)
-                                {
-                                    WriteLine("Error! (i) numSlides (q) slidingWindowSize, (p) slidingWindow" + i + " " + q + " " + p);
-
-                                }
                             }
                             //p is reached, time for output, need to add slidingWindowSize
                             //error is here
                             file.WriteLine();
-                            file.WriteLine("out: {0}", (1 / ((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value))).ToString(".################"));
+                            file.WriteLine("out: {0}", (reciprocal((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value))).ToString(".################"));
 
                         }
                     }
 
                     //non training data for each pass, slide # is used for file name
                     //leading zero
-                    testNames[i] = "testNames" + i.ToString("D3") + ".txt";
+                    testNames[i] = "test" + i.ToString("D3") + ".txt";
                     using (System.IO.StreamWriter testFile =
                     new System.IO.StreamWriter(testNames[i], true))
                     {
                         //7 = a formula
-                        testFile.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numOutputs);
+                        testFile.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindows), numOutputs);
                         testFile.Write("in: ");
                         for (int q = 0; q < slidingWindowSize; q++)
                         {
-                            testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (1/(double)(1+(dates[i + q + slidingWindows]-dates[0]).Days)).ToString(".################"), (1/(double)(dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value)).ToString(".################"), (1/(double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value)).ToString(".################"));
+                            testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((double)(1+(dates[i + q + slidingWindows]-dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value))).ToString(".################"));
                             //space inbetween each write until end of line
                             if (q != (slidingWindowSize - 1))
                             {
@@ -214,7 +208,7 @@ namespace FredAPI
                         }
                         //The last training set I should be predicting?  Well... I still need to check against it.
                         testFile.WriteLine();
-                        testFile.WriteLine("out: {0}", (1/((double)((dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value)))).ToString(".################"));
+                        testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value)))).ToString(".################"));
                     }
                     
                 }
