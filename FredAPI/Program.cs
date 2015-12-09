@@ -33,6 +33,11 @@ namespace FredAPI
 
         }
 
+        double reciprocal(double value)
+        {
+            return (1 / value);
+        }
+
         //assumes the dates are the same across each data series
         static void PrintData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
@@ -81,9 +86,11 @@ namespace FredAPI
 
             WriteLine("# of Dates (i.e. months): {0} ", arraySize);
             WriteLine("How many dates per sliding window? [Default is 6]: ", arraySize);
-            entry = ReadLine();
-            WriteLine("How many slides per window? [Default is 6]: ");
             entry2 = ReadLine();
+
+
+            WriteLine("How many slides per window? [Default is 6]: ");
+            entry = ReadLine(); 
             WriteLine("Duplication Base [2000] How much duplication? [Base/(dates per sliding window[6]))]: ");
             entry3 = ReadLine();
             WriteLine("Randomize (y) or (n) ?:");
@@ -161,19 +168,28 @@ namespace FredAPI
                                     q = rnd.Next(0, slidingWindowSize);
                                     //Write(q);
                                 }
-                                //Write(q);
-                                //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
-                                file.Write("{0} {1} {2} {3} {4} {5} {6}", ((1 / (1 + (double)(dates[i + p + q] - dates[0]).Days))).ToString(".################"), (1 / (double)(dataDictionary["rGDP"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)dataDictionary["fedFundRate"][dates[i + p + q]].Value).ToString(".################"), (1 / (double)(dataDictionary["empPopRatio"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["consConfIndex"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["housingSeries"][dates[i + p + q]].Value)).ToString(".################"));
-                                //space inbetween each write until end of line
-                                if (p != (slidingWindows - 1))
+                                try
                                 {
-                                    file.Write(" ");
+                                    //Write(q);
+                                    //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
+                                    file.Write("{0} {1} {2} {3} {4} {5} {6}", ((1 / (1 + (double)(dates[i + p + q] - dates[0]).Days))).ToString(".################"), (1 / (double)(dataDictionary["rGDP"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)dataDictionary["fedFundRate"][dates[i + p + q]].Value).ToString(".################"), (1 / (double)(dataDictionary["empPopRatio"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["consConfIndex"][dates[i + p + q]].Value)).ToString(".################"), (1 / (double)(dataDictionary["housingSeries"][dates[i + p + q]].Value)).ToString(".################"));
+                                    //space inbetween each write until end of line
+                                    if (p != (slidingWindows - 1))
+                                    {
+                                        file.Write(" ");
+                                    }
+                                    q = holder;
                                 }
-                                q = holder;
+                                catch (Exception e)
+                                {
+                                    WriteLine("Error! (i) numSlides (q) slidingWindowSize, (p) slidingWindow" + i + " " + q + " " + p);
+
+                                }
                             }
                             //p is reached, time for output, need to add slidingWindowSize
+                            //error is here
                             file.WriteLine();
-                            file.WriteLine("out: {0}", (1 / ((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindowSize]].Value))).ToString(".################"));
+                            file.WriteLine("out: {0}", (1 / ((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value))).ToString(".################"));
 
                         }
                     }
