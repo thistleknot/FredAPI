@@ -508,7 +508,7 @@ namespace FredAPI
             };
 
             //get year of rGDP dollars
-            if (data.ContainsKey("rGDP"))
+            //if (data.ContainsKey("rGDP"))
             {
 
                 //var series = data["rGDP"];
