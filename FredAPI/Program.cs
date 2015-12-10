@@ -55,6 +55,27 @@ namespace FredAPI
 
         }
 
+        static void PrintDataToFile(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
+        {
+            //"rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries"
+
+            IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
+
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter("dataFile.txt", true))
+            {
+
+                file.WriteLine("date,rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
+
+                foreach (DateTime date in dates)
+                {
+                    file.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
+                }
+            }
+            
+
+        }
+
+
         static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
             //# of dates
@@ -582,6 +603,8 @@ namespace FredAPI
             deInflate(ref sortedDataList, deflateYear);
 
             PrintData(sortedDataList);
+
+            PrintDataToFile(sortedDataList);
 
             parseData(sortedDataList);
 
