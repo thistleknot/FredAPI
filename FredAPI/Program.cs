@@ -55,13 +55,13 @@ namespace FredAPI
 
         }
 
-        static void PrintDataToFile(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
+        static void PrintDataToFile(Dictionary<string, SortedList<DateTime, double?>> dataDictionary, string fileName)
         {
             //"rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries"
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter("dataFile.txt", true))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName+".csv", true))
             {
 
                 file.WriteLine("date,rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
@@ -117,7 +117,7 @@ namespace FredAPI
             entry = ReadLine(); 
             WriteLine("Duplication Base [2000] How much duplication? [Base/(dates per sliding window[6]))]: ");
             entry3 = ReadLine();
-            WriteLine("Randomize (y) or (n) ?:");
+            WriteLine("Randomize [y] or (n) ?:");
             entry4 = ReadLine();           
 
             if (entry != "")
@@ -503,23 +503,61 @@ namespace FredAPI
 
             int deflateYear = 0;
 
-            string entry;
+            var data = new Dictionary<string, IList<Observation>>
+            {
+            };
 
-            Write("Enter start year, ex. 2005: ");
+            //get year of rGDP dollars
+            if (data.ContainsKey("rGDP"))
+            {
+
+                //var series = data["rGDP"];
+
+                var series = fred.GetSeries("GDPC1");
+                var units = series.Units;
+                //Console.WriteLine("Units: ");
+                //Console.WriteLine(units);
+
+                //string resultString = Regex.Match(units, @"\d+").Value;
+                deflateYear = extractNumber(series.Units);
+
+                Console.WriteLine("deflate year: {0}", deflateYear.ToString());
+
+            }
+
+            string entry;
+            WriteLine("Pushing ENTER accepts default values");
+            Write("Enter start year [2005]: ");
             entry = ReadLine();
+            if (entry == "")
+            {
+                entry = "2005";
+            }
             startYear = Convert.ToInt32(entry);
 
-            WriteLine("Enter end year, ex. 2015: ");
+            WriteLine("Enter end year [2015] ");
             Write("years must cover rGDP real year to deinflate: ");
             entry = ReadLine();
+            if (entry == "")
+            {
+                entry = "2015";
+            }
             endYear = Convert.ToInt32(entry);
 
-            Write("Enter start month, ex. Jan = 1, October = 10: ");
+            Write("Enter start month, ex. Jan = 1 or Oct = [10]: ");
             entry = ReadLine();
+            if (entry == "")
+            {
+                entry = "10";
+            }
             startMonth = Convert.ToInt32(entry);
 
-            Write("Enter end month, ex. Jan = 1, October = 10: ");
+            Write("Enter end month, ex. Jan = 1 or Oct = [10]: ");
             entry = ReadLine();
+            if (entry == "")
+            {
+                entry = "10";
+            }
             endMonth = Convert.ToInt32(entry);
 
             DateTime startDate = new DateTime(startYear, startMonth, 1);
@@ -535,9 +573,7 @@ namespace FredAPI
 
             int dataCounter = 0;
 
-            var data = new Dictionary<string, IList<Observation>>
-            {
-            };
+
 
             //create lists as FredAPI objects
             foreach (var instance in dataNames)
@@ -553,24 +589,6 @@ namespace FredAPI
 
                 dataCounter++;
             };
-
-           //get year of rGDP dollars
-           if (data.ContainsKey("rGDP"))
-            {
-
-                //var series = data["rGDP"];
-                
-                var series = fred.GetSeries("GDPC1");
-                var units = series.Units;
-                //Console.WriteLine("Units: ");
-                //Console.WriteLine(units);
-
-                //string resultString = Regex.Match(units, @"\d+").Value;
-                deflateYear = extractNumber(series.Units);
-
-                Console.WriteLine("deflate year: {0}", deflateYear.ToString());
-
-            }
 
             //MinMaxDates(ref data);
 
@@ -597,6 +615,7 @@ namespace FredAPI
             MinMaxDates(ref sortedDataList);
 
             PrintData(sortedDataList);
+            PrintDataToFile(sortedDataList, "preConversion");
 
             //deInflate
 
@@ -604,7 +623,7 @@ namespace FredAPI
 
             PrintData(sortedDataList);
 
-            PrintDataToFile(sortedDataList);
+            PrintDataToFile(sortedDataList, "postConversion");
 
             parseData(sortedDataList);
 
