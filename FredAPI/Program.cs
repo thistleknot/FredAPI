@@ -78,162 +78,230 @@ namespace FredAPI
 
         static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
-            //# of dates
-            int arraySize = dataDictionary["pSaveRate"].Count;
 
-            string entry;
-            string entry2;
-            string entry3;
-            string entry4;
+            int numOfSlides = dataDictionary["pSaveRate"].Count-1; ; //# of passes, i.e. new neural network //based on sliding windows - slidingWindowSize?
+                                   //counter = slide
+            int numOfSlidingWindows = 7; //training sample size
+                                         //counter = windowNumber
+            int slidingWindowSize = 6; //# of input vars
+                                       //counter = positionInWindow
 
-            //# of months to feed into input array (1 pass)
-            int slidingWindowSize = 6;
-            int numSlidingWindows;
-            int duplication = (int)(Math.Ceiling((double)(2000 / slidingWindowSize)));
+            int numNeurons = 0;
 
-            bool randomize = false;
-
-            //-1 because date is the key of each dataDictionary entry
-            //+1 because consumerPriceIndex is used for deinflation only.
-            //dataDictionary gets +1 for bias neuron?
-            int numOutputs = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1));
-
-            //# of windows in each training batch
-            int slidingWindows = 6;
-
-            //# of files outputted
-            int numSlides;
+            double complexity = 1.0;
 
             Random rnd = new Random();
 
+            int duplication = 0;
+
+            bool randomize = false;
+
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
-            WriteLine("# of Dates (i.e. months): {0} ", arraySize);
-            WriteLine("How many dates per sliding window? [Default is 6]: ", arraySize);
-            entry2 = ReadLine();
+            string entry = ""; //reusable
 
+            Console.WriteLine("Number of Sliding Windows, i.e. training sets: [7]");
 
-            WriteLine("How many slides per window? [Default is 6]: ");
-            entry = ReadLine(); 
-            WriteLine("Duplication Base [2000] How much duplication? [Base/(dates per sliding window[6]))]: ");
-            entry3 = ReadLine();
-            WriteLine("Randomize [y] or (n) ?:");
-            entry4 = ReadLine();           
+            entry = Console.ReadLine();
 
-            if (entry != "")
+            if (entry == "")
+            {
+                numOfSlidingWindows = 7;
+            }
+            else
+            {
+                numOfSlidingWindows = Int32.Parse(entry);
+            }
+
+            Console.WriteLine("Size of 1 sliding windows i.e. inputs (months): [6]");
+
+            entry = Console.ReadLine();
+
+            if (entry == "")
+            {
+                //slidingWindowSize = 6;
+            }
+            else
             {
                 slidingWindowSize = Int32.Parse(entry);
             }
-            else
-            {
-                //keep default
-            }
-            //startYear = Convert.ToInt32(entry);
 
-            if (entry2 != "")
-            {
-                slidingWindows = Int32.Parse(entry2);
-            }
-            else
-            {
-                //keep default
-            }
-            //startYear = Convert.ToInt32(entry);
+            WriteLine("Duplication Base [2000] How much duplication? [Base/(slidingWindowSize[6]))]: ");
 
-            if (entry3 != "")
+            entry = Console.ReadLine();
+
+            if (entry != "")
             {
-                duplication = (int)(Math.Ceiling((double)(Int32.Parse(entry3) / slidingWindowSize)));
+                duplication = (int)(Math.Ceiling((double)(Int32.Parse(entry) / slidingWindowSize)));
+                
             }
             else
             {
                 //keep default
+                duplication = (int)(Math.Ceiling((double)(2000 / slidingWindowSize)));                
             }
             //startYear = Convert.ToInt32(entry);
+            WriteLine("Randomize [y] or (n) ?:");
 
-            if (entry4 != "n")
+            entry = Console.ReadLine();
+
+            if (entry != "n")
             {
                 randomize = true;
             }
 
-            numSlidingWindows = arraySize - slidingWindowSize;
-            numSlides = numSlidingWindows - slidingWindows;
+            Console.WriteLine("Factor of neurons [default is 1, accepts decimals]: [1]");
 
-            //# of training sets
-            for (int i = 0; i < numSlides; ++i)
+            entry = Console.ReadLine();
+
+            if (entry == "")
             {
-                String[] slideNames = new String[numSlides];
-                String[] testNames = new String[numSlides];
+                //nothing
+            }
+            else
+            {
+                complexity = Int32.Parse(entry);
+            }
+
+            numNeurons = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1)*complexity);
+
+            WriteLine("# of Dates (i.e. months): {0} ", numOfSlides);
+
+            //loop 1
+            WriteLine(numOfSlides - numOfSlidingWindows - slidingWindowSize);
+            for (int slide = 0; slide <= (numOfSlides - numOfSlidingWindows - slidingWindowSize); slide++)
+            {
+                //Console.WriteLine();
+                //Console.WriteLine();
+                //Console.WriteLine("slide: {0}", slide);
+
+                String[] slideNames = new String[numOfSlides];
+                String[] testNames = new String[numOfSlides];
 
                 //leading zero
-                slideNames[i] = "train" + i.ToString("D3") + ".txt";
+                slideNames[slide] = "train" + slide.ToString("D3") + ".txt";
+                //slideNames[slide] = "train" + ".txt";
 
                 //training data, slide # is used for file name
                 using (System.IO.StreamWriter file =
-                    new System.IO.StreamWriter(slideNames[i], true))
+                    new System.IO.StreamWriter(slideNames[slide], true))
                 {
                     //inputs, hidden, output
-                    file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindows), numOutputs);
 
-                    for (int d = 0; d < duplication; d++)
+                    //**HERE
+                    //file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * numOfSlidingWindows), numNeurons);
+
+                    //# of months to feed into input array (1 pass), i.e # of months in 1 window
+                    //for (int positionInWindow = 0; positionInWindow <= slidingWindowSize; positionInWindow++)
+
+                    //loop2
+                    for (int windowNumber = 0; windowNumber <= numOfSlidingWindows; windowNumber++)
                     {
-                        //# of months to feed into input array (1 pass), i.e # of months in 1 window
-                        for (int q = 0; q < slidingWindowSize; q++)
+
+                        if (windowNumber == numOfSlidingWindows)
                         {
+                            //test data
+                            //header for next section
+                            //Console.WriteLine();
+                            //Console.WriteLine("  Test Data: ", windowNumber);
+                            //header for next section
+                            //Console.WriteLine("  Months 0 to {0}", slidingWindowSize);
+                            //Console.Write("  ");
 
-                            file.Write("in: ");
-                            //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
+                            //non training data for each pass, slide # is used for file name
+                            //leading zero
 
-                            for (int p = 0; p < slidingWindows; p++)
+                            testNames[slide] = "test" + slide.ToString("D3") + ".txt";
+                            using (System.IO.StreamWriter testFile =
+                            new System.IO.StreamWriter(testNames[slide], true))
                             {
-                                
-                                int holder = q;
-                                if(randomize)
+                                testFile.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numNeurons);
+                                testFile.Write("in: ");
+
+                                //loop 3a
+                                //test data
+                                for (int positionInWindow = 0; positionInWindow <= slidingWindowSize; positionInWindow++)
                                 {
-                                    q = rnd.Next(0, slidingWindowSize);
-                                    //Write(q);
-                                }
-
-                                    //Write(q);
-                                    //q = biggest number (# of dates in data set), q = # of months fed into input, p = slide #
-                                    file.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal( (1 + (double)(dates[i + p + q] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)dataDictionary["fedFundRate"][dates[i + p + q]].Value)).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[i + p + q]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[i + p + q]].Value))).ToString(".################"));
-                                    //space inbetween each write until end of line
-                                    if (p != (slidingWindows - 1))
+                                    //inputs
+                                    if (positionInWindow != (slidingWindowSize))
                                     {
-                                        file.Write(" ");
+                                        //inputs
+                                        testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((double)(1 + (dates[slide + windowNumber + positionInWindow] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["fedFundRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
+                                        //Console.Write("{0}{1}", " ", slide + windowNumber + positionInWindow);
+
                                     }
-                                    q = holder;
+                                    else
+                                    //target
+                                    {
+                                        //The last training set I should be predicting?  Well... I still need to check against it.
+                                        testFile.WriteLine();
+                                        //HERE
+                                        testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
+                                        //Console.Write(" t:{0}", (slide + windowNumber + positionInWindow));
+                                        //Console.WriteLine();
+                                    }
+                                    //space between values
+                                    if (positionInWindow < (slidingWindowSize - 1))
+                                    {
+                                        testFile.Write(" ");
+                                    }
+                                }
                             }
-                            //p is reached, time for output, need to add slidingWindowSize
-                            //error is here
-                            file.WriteLine();
-                            file.WriteLine("out: {0}", (reciprocal((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value))).ToString(".################"));
 
                         }
-                    }
-
-                    //non training data for each pass, slide # is used for file name
-                    //leading zero
-                    testNames[i] = "test" + i.ToString("D3") + ".txt";
-                    using (System.IO.StreamWriter testFile =
-                    new System.IO.StreamWriter(testNames[i], true))
-                    {
-                        //7 = a formula
-                        testFile.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindows), numOutputs);
-                        testFile.Write("in: ");
-                        for (int q = 0; q < slidingWindows/*slidingWindowSize*/; q++)
+                        //loop 3b
+                        else //training data
                         {
-                            testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((double)(1+(dates[i + q + slidingWindows]-dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["fedFundRate"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[i + q + slidingWindows]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[i + q + slidingWindows]].Value))).ToString(".################"));
-                            //space inbetween each write until end of line
-                            if (q != (slidingWindows - 1))
-                            {
-                                testFile.Write(" ");
-                            }
+                            //duplication doesn't work unless it's random, repeats 1111, 2222, 3333.
+                            for (int d = 0; d < duplication; d++)
+                            { 
+                                //inputs
+                                int holder = windowNumber;
+                                if (randomize)
+                                {
+                                    windowNumber = rnd.Next(0, numOfSlidingWindows);
+                                    //WriteLine(windowNumber);
+                                    if (windowNumber == numOfSlidingWindows) { Console.ReadLine(); }
+                                        
+                                }
+                                {
+                                    file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numNeurons);
+                                    file.Write("in: ");
+                                    //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
+
+                                    //for (int windowNumber = 0; windowNumber < slidingWindowSize; windowNumber++)
+                                    for (int positionInWindow = 0; positionInWindow <= slidingWindowSize; positionInWindow++)
+                                    {
+                                        //inputs
+                                        if (positionInWindow != (slidingWindowSize))
+                                        {
+                                            file.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((1 + (double)(dates[slide + windowNumber + positionInWindow] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)dataDictionary["fedFundRate"][dates[slide + windowNumber + positionInWindow]].Value)).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
+                                            //Console.Write("{0}{1}", " ", slide + windowNumber + positionInWindow);
+                                            //space inbetween each write until end of line
+                                        }
+                                        else
+                                        //target
+                                        {
+                                            //p is reached, time for output, need to add slidingWindowSize
+                                            //error is here
+                                            file.WriteLine();
+                                            //HERE
+                                            file.WriteLine("out: {0}", (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
+                                            //Console.Write(" t:{0}", (slide + windowNumber + positionInWindow));
+                                            //Console.WriteLine();
+                                        }
+                                       //space between values
+                                        if (positionInWindow < (slidingWindowSize-1))
+                                        {
+                                            file.Write(" ");
+                                        }
+                                    }
+                                }
+                                //end randomization
+                                windowNumber = holder;
                         }
-                        //The last training set I should be predicting?  Well... I still need to check against it.
-                        testFile.WriteLine();
-                        testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[i + slidingWindows + slidingWindowSize]].Value)))).ToString(".################"));
                     }
-                    
+                    }                    
                 }
             }
 
