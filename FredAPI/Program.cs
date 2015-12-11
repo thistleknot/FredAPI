@@ -160,7 +160,7 @@ namespace FredAPI
             }
             else
             {
-                complexity = Int32.Parse(entry);
+                complexity = Double.Parse(entry);
             }
 
             numNeurons = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1)*complexity);
