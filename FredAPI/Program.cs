@@ -252,6 +252,7 @@ namespace FredAPI
                         //loop 3b
                         else //training data
                         {
+                            file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numNeurons);
                             //duplication doesn't work unless it's random, repeats 1111, 2222, 3333.
                             for (int d = 0; d < duplication; d++)
                             { 
@@ -262,10 +263,9 @@ namespace FredAPI
                                     windowNumber = rnd.Next(0, numOfSlidingWindows);
                                     //WriteLine(windowNumber);
                                     if (windowNumber == numOfSlidingWindows) { Console.ReadLine(); }
-                                        
                                 }
                                 {
-                                    file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numNeurons);
+                                    
                                     file.Write("in: ");
                                     //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
 
