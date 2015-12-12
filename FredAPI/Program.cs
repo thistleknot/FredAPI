@@ -61,7 +61,7 @@ namespace FredAPI
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName+".csv", true))
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName + ".csv", true))
             {
 
                 file.WriteLine("date,rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
@@ -71,7 +71,7 @@ namespace FredAPI
                     file.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
                 }
             }
-            
+
 
         }
 
@@ -79,8 +79,8 @@ namespace FredAPI
         static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
 
-            int numOfSlides = dataDictionary["pSaveRate"].Count-1; ; //# of passes, i.e. new neural network //based on sliding windows - slidingWindowSize?
-                                   //counter = slide
+            int numOfSlides = dataDictionary["pSaveRate"].Count - 1; ; //# of passes, i.e. new neural network //based on sliding windows - slidingWindowSize?
+                                                                       //counter = slide
             int numOfSlidingWindows = 7; //training sample size
                                          //counter = windowNumber
             int slidingWindowSize = 6; //# of input vars
@@ -95,6 +95,9 @@ namespace FredAPI
             int duplication = 0;
 
             bool randomize = false;
+
+            //predict movement or number
+            char movementOrNumber = 'n';
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
@@ -133,12 +136,12 @@ namespace FredAPI
             if (entry != "")
             {
                 duplication = (int)(Math.Ceiling((double)(Int32.Parse(entry) / slidingWindowSize)));
-                
+
             }
             else
             {
                 //keep default
-                duplication = (int)(Math.Ceiling((double)(2000 / slidingWindowSize)));                
+                duplication = (int)(Math.Ceiling((double)(2000 / slidingWindowSize)));
             }
             //startYear = Convert.ToInt32(entry);
             WriteLine("Randomize [y] or (n) ?:");
@@ -163,7 +166,24 @@ namespace FredAPI
                 complexity = Double.Parse(entry);
             }
 
-            numNeurons = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1)*complexity);
+            Console.WriteLine("Predict (m)ovement (i.e. up/down) or actual [n]umber?");
+
+            entry = Console.ReadLine();
+            if (entry == "")
+            {
+                movementOrNumber = 'n';
+            }
+            else if (entry == "m")
+            {
+                movementOrNumber = 'm';
+            }
+            else
+            {
+                movementOrNumber = 'n';
+            }
+
+
+            numNeurons = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1) * complexity);
 
             WriteLine("# of Dates (i.e. months): {0} ", numOfSlides);
 
@@ -236,7 +256,28 @@ namespace FredAPI
                                         //The last training set I should be predicting?  Well... I still need to check against it.
                                         testFile.WriteLine();
                                         //HERE
-                                        testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
+                                        if (movementOrNumber == 'n')
+                                        {
+                                            testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
+                                        }
+                                        else
+                                        {
+                                            double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value));
+                                            double oldPrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow - 1]].Value));
+                                            if (futurePrice > oldPrice)
+                                            {
+                                                //more
+                                                testFile.WriteLine("out: 1");
+
+                                            }
+                                            else
+                                            {
+                                                //less
+                                                testFile.WriteLine("out: 0");
+                                            }
+                                        }
+
+
                                         //Console.Write(" t:{0}", (slide + windowNumber + positionInWindow));
                                         //Console.WriteLine();
                                     }
@@ -255,7 +296,7 @@ namespace FredAPI
                             file.WriteLine("topology: {0} {1} 1", ((dataDictionary.Count) * slidingWindowSize), numNeurons);
                             //duplication doesn't work unless it's random, repeats 1111, 2222, 3333.
                             for (int d = 0; d < duplication; d++)
-                            { 
+                            {
                                 //inputs
                                 int holder = windowNumber;
                                 if (randomize)
@@ -265,7 +306,7 @@ namespace FredAPI
                                     if (windowNumber == numOfSlidingWindows) { Console.ReadLine(); }
                                 }
                                 {
-                                    
+
                                     file.Write("in: ");
                                     //# of windows in each training batch, i.e. x# of windows  * slidingWindowSize = # of months processed (some repeated)
 
@@ -282,16 +323,35 @@ namespace FredAPI
                                         else
                                         //target
                                         {
-                                            //p is reached, time for output, need to add slidingWindowSize
-                                            //error is here
                                             file.WriteLine();
                                             //HERE
-                                            file.WriteLine("out: {0}", (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
+                                            if (movementOrNumber == 'n')
+                                            {
+                                                file.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
+                                            }
+                                            else
+                                            {
+                                                double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value));
+                                                double oldPrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow - 1]].Value));
+                                                if (futurePrice > oldPrice)
+                                                {
+                                                    //more
+                                                    file.WriteLine("out: 1");
+
+                                                }
+                                                else
+                                                {
+                                                    //less
+                                                    file.WriteLine("out: 0");
+                                                }
+                                            }
+
+
                                             //Console.Write(" t:{0}", (slide + windowNumber + positionInWindow));
                                             //Console.WriteLine();
                                         }
-                                       //space between values
-                                        if (positionInWindow < (slidingWindowSize-1))
+                                        //space between values
+                                        if (positionInWindow < (slidingWindowSize - 1))
                                         {
                                             file.Write(" ");
                                         }
@@ -299,9 +359,9 @@ namespace FredAPI
                                 }
                                 //end randomization
                                 windowNumber = holder;
+                            }
                         }
                     }
-                    }                    
                 }
             }
 
@@ -386,7 +446,7 @@ namespace FredAPI
         //actually I can, I just can't use a foreach... duh
         static void FillInGaps(ref Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
         {
-           
+
             //some bullshit date, gets overwritten after counter > 0
             DateTime lastDate = new DateTime(1776, 1, 1);
             double? lastValue = 0;
@@ -410,8 +470,8 @@ namespace FredAPI
 
                 foreach (var ob in list)
                 {
-                    
-                    if (counter!=0)
+
+                    if (counter != 0)
                     {
                         //flag for quarterly data
                         if ((ob.Key - lastDate).TotalDays > 31)
@@ -423,11 +483,11 @@ namespace FredAPI
                             //can't do list.Add due to forEach loop already having enumerated the list to loop through.
 
                             //I could modify this for the # of days in the month, doa  weighted sum
-                            holder.Add(lastDate.AddMonths(1), (ob.Value + lastValue)/2);
-                            holder.Add(lastDate.AddMonths(2), (ob.Value + lastValue)/2);
+                            holder.Add(lastDate.AddMonths(1), (ob.Value + lastValue) / 2);
+                            holder.Add(lastDate.AddMonths(2), (ob.Value + lastValue) / 2);
                         }
                     }
-                    
+
                     lastDate = ob.Key;
                     lastValue = ob.Value;
                     counter++;
@@ -527,7 +587,7 @@ namespace FredAPI
             Console.WriteLine(lowestDate2.ToShortDateString());
             Console.WriteLine("Max Date:");
             Console.WriteLine(highestDate2.ToShortDateString());
-            
+
             //var holder = new Dictionary<string, IList<Observation>> { };
 
             //trim
@@ -539,7 +599,7 @@ namespace FredAPI
                 {
                     if (obList.Key < lowestDate2)
                     {
-                        WriteLine("holderBelowValue: {0}", obList.Key); 
+                        WriteLine("holderBelowValue: {0}", obList.Key);
                         holder.Add(obList.Key, obList.Value);
 
                     }
@@ -555,7 +615,7 @@ namespace FredAPI
                 {
                     //list.Remove(temp.Key);
                     obData.Value.Remove(temp.Key);
-                }            
+                }
             }
         }
 
