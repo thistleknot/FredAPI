@@ -119,7 +119,7 @@ namespace FredAPI
                 numOfSlidingWindows = Int32.Parse(entry);
             }
 
-            Console.WriteLine("Size of 1 sliding windows i.e. inputs (months): [6]");
+            Console.WriteLine("Size of 1 sliding window i.e. inputs (months): [6]");
 
             entry = Console.ReadLine();
 
