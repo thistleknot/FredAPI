@@ -71,10 +71,7 @@ namespace FredAPI
                     file.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
                 }
             }
-
-
         }
-
 
         static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary, string[] args)
         {
@@ -261,10 +258,14 @@ namespace FredAPI
                                                 testFile.WriteLine("out: 1");
 
                                             }
-                                            else
+                                            else if (futurePrice < oldPrice)
                                             {
                                                 //less
                                                 testFile.WriteLine("out: 0");
+                                            }
+                                            else if (futurePrice == oldPrice)
+                                            {
+                                                testFile.WriteLine("out: .5");
                                             }
                                         }
 
@@ -691,8 +692,6 @@ namespace FredAPI
             string[] obsNames = new string[] { "GDPC1", "PSAVERT", "DFF", "EMRATIO", "UMCSENT", "CP0000USM086NEST", "SPCS20RSA" };
 
             int dataCounter = 0;
-
-
 
             //create lists as FredAPI objects
             foreach (var instance in dataNames)
