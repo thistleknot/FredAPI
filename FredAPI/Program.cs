@@ -76,7 +76,7 @@ namespace FredAPI
         }
 
 
-        static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary)
+        static void parseData(Dictionary<string, SortedList<DateTime, double?>> dataDictionary, string[] args)
         {
 
             int numOfSlides = dataDictionary["pSaveRate"].Count - 1; ; //# of passes, i.e. new neural network //based on sliding windows - slidingWindowSize?
@@ -97,7 +97,13 @@ namespace FredAPI
             bool randomize = false;
 
             //predict movement or number
-            char movementOrNumber = 'n';
+            bool price = true;
+
+            //if (!args[].Equals(null))
+            if (!(args.Length == 0))
+            {
+                price = false;
+            }
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
@@ -167,21 +173,6 @@ namespace FredAPI
             }
 
             Console.WriteLine("Predict (m)ovement (i.e. up/down) or actual [n]umber?");
-
-            entry = Console.ReadLine();
-            if (entry == "")
-            {
-                movementOrNumber = 'n';
-            }
-            else if (entry == "m")
-            {
-                movementOrNumber = 'm';
-            }
-            else
-            {
-                movementOrNumber = 'n';
-            }
-
 
             numNeurons = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1) * complexity);
 
@@ -256,7 +247,7 @@ namespace FredAPI
                                         //The last training set I should be predicting?  Well... I still need to check against it.
                                         testFile.WriteLine();
                                         //HERE
-                                        if (movementOrNumber == 'n')
+                                        if (price)
                                         {
                                             testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
                                         }
@@ -325,7 +316,7 @@ namespace FredAPI
                                         {
                                             file.WriteLine();
                                             //HERE
-                                            if (movementOrNumber == 'n')
+                                            if (price)
                                             {
                                                 file.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
                                             }
@@ -753,7 +744,7 @@ namespace FredAPI
 
             PrintDataToFile(sortedDataList, "postConversion");
 
-            parseData(sortedDataList);
+            parseData(sortedDataList, args);
 
         }
 
