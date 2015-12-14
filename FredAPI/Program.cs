@@ -85,6 +85,8 @@ namespace FredAPI
 
             int numNeurons = 0;
 
+            int monthsToPredict = 1;
+
             double complexity = 1.0;
 
             Random rnd = new Random();
@@ -132,7 +134,20 @@ namespace FredAPI
                 slidingWindowSize = Int32.Parse(entry);
             }
 
-            WriteLine("Duplication Base [2000] How much duplication? [Base/(slidingWindowSize[6]))]: ");
+            Console.WriteLine("How many months ahead to predict [1]: ");
+
+            entry = Console.ReadLine();
+
+            if (entry == "")
+            {
+                //nothing
+            }
+            else
+            {
+                monthsToPredict = Int32.Parse(entry);
+            }
+
+            WriteLine("Duplication Base [2000] How much bootstrap duplication? [Base/(slidingWindowSize[6]))]: ");
 
             entry = Console.ReadLine();
 
@@ -146,7 +161,6 @@ namespace FredAPI
                 //keep default
                 duplication = (int)(Math.Ceiling((double)(2000 / slidingWindowSize)));
             }
-            //startYear = Convert.ToInt32(entry);
             WriteLine("Randomize [y] or (n) ?:");
 
             entry = Console.ReadLine();
@@ -156,7 +170,7 @@ namespace FredAPI
                 randomize = true;
             }
 
-            Console.WriteLine("Factor of neurons [default is 1, accepts decimals]: [1]");
+            Console.WriteLine("Factor of neurons (accepts decimals): [1]");
 
             entry = Console.ReadLine();
 
@@ -174,10 +188,11 @@ namespace FredAPI
             numNeurons = (int)(Math.Ceiling(Math.Sqrt((dataDictionary.Count + 1) * slidingWindowSize) * 1) * complexity);
 
             WriteLine("# of Dates (i.e. months): {0} ", numOfSlides);
-
+            
             //loop 1
-            WriteLine(numOfSlides - numOfSlidingWindows - slidingWindowSize);
-            for (int slide = 0; slide <= (numOfSlides - numOfSlidingWindows - slidingWindowSize); slide++)
+            WriteLine("numOfSlides - numOfSlidingWindows - slidingWindowSize - months - monthsToPredict + 1: {0} ", numOfSlides - numOfSlidingWindows - slidingWindowSize - monthsToPredict + 1);
+            //for (int slide = 0; slide <= (numOfSlides - numOfSlidingWindows - slidingWindowSize); slide++)
+            for (int slide = 0; slide <= (numOfSlides - numOfSlidingWindows - slidingWindowSize - monthsToPredict + 1); slide++)
             {
                 //Console.WriteLine();
                 //Console.WriteLine();
@@ -246,11 +261,11 @@ namespace FredAPI
                                         //HERE
                                         if (price)
                                         {
-                                            testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
+                                            testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow + monthsToPredict - 1]].Value)))).ToString(".################"));
                                         }
                                         else
                                         {
-                                            double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value));
+                                            double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow + monthsToPredict - 1]].Value));
                                             double oldPrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow - 1]].Value));
                                             if (futurePrice > oldPrice)
                                             {
@@ -319,11 +334,11 @@ namespace FredAPI
                                             //HERE
                                             if (price)
                                             {
-                                                file.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value)))).ToString(".################"));
+                                                file.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow + monthsToPredict - 1]].Value)))).ToString(".################"));
                                             }
                                             else
                                             {
-                                                double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value));
+                                                double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow + monthsToPredict - 1]].Value));
                                                 double oldPrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow - 1]].Value));
                                                 if (futurePrice > oldPrice)
                                                 {
