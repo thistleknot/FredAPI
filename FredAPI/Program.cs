@@ -47,11 +47,11 @@ namespace FredAPI
 
             IList<DateTime> dates = dataDictionary["pSaveRate"].Keys.ToList();
 
-            WriteLine("date,rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
+            WriteLine("date,construction,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
 
             foreach (DateTime date in dates)
             {
-                WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
+                WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["construction"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
             }
 
         }
@@ -65,11 +65,11 @@ namespace FredAPI
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(fileName + ".csv", true))
             {
 
-                file.WriteLine("date,rGDP,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
+                file.WriteLine("date,construction,pSaveRate,fedFundRate,empPopRatio,consConfIndex,consPriceIndex,housingSeries");
 
                 foreach (DateTime date in dates)
                 {
-                    file.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["rGDP"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
+                    file.WriteLine("{0},{1},{2},{3},{4},{5},{6},{7},", date.ToShortDateString(), dataDictionary["construction"][date].Value.ToString(), dataDictionary["pSaveRate"][date].Value.ToString(), dataDictionary["fedFundRate"][date].Value.ToString(), dataDictionary["empPopRatio"][date].Value.ToString(), dataDictionary["consConfIndex"][date].Value.ToString(), dataDictionary["consPriceIndex"][date].Value.ToString(), dataDictionary["housingSeries"][date].Value.ToString());
                 }
             }
         }
@@ -250,7 +250,7 @@ namespace FredAPI
                                     if (positionInWindow != (slidingWindowSize))
                                     {
                                         //inputs
-                                        testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((double)(1 + (dates[slide + windowNumber + positionInWindow] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["fedFundRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
+                                        testFile.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((double)(1 + (dates[slide + windowNumber + positionInWindow] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["construction"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["fedFundRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
                                         //Console.Write("{0}{1}", " ", slide + windowNumber + positionInWindow);
 
                                     }
@@ -324,7 +324,7 @@ namespace FredAPI
                                         //inputs
                                         if (positionInWindow != (slidingWindowSize))
                                         {
-                                            file.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((1 + (double)(dates[slide + windowNumber + positionInWindow] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["rGDP"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)dataDictionary["fedFundRate"][dates[slide + windowNumber + positionInWindow]].Value)).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
+                                            file.Write("{0} {1} {2} {3} {4} {5} {6}", (reciprocal((1 + (double)(dates[slide + windowNumber + positionInWindow] - dates[0]).Days))).ToString(".################"), (reciprocal((double)(dataDictionary["construction"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["pSaveRate"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)dataDictionary["fedFundRate"][dates[slide + windowNumber + positionInWindow]].Value)).ToString(".################"), (reciprocal((double)(dataDictionary["empPopRatio"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["consConfIndex"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"), (reciprocal((double)(dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow]].Value))).ToString(".################"));
                                             //Console.Write("{0}{1}", " ", slide + windowNumber + positionInWindow);
                                             //space inbetween each write until end of line
                                         }
@@ -380,32 +380,12 @@ namespace FredAPI
         {
 
             int counter = 0;
-            double? priceRunningTotal = 0.0;
+            double? runningTotal = 0.0;
             double? CPIRunningTotal = 0.0;
-            double? averagePrice = 0.0;
+            double? averageHousingPrice = 0.0;
+            double? averageConstructionPrice = 0.0;
             double? averageCPI = 0.0;
-
-            //need to definflate SPCS20RSA based on CPI
-            foreach (var place in dataDictionary["housingSeries"])
-            {
-                DateTime temp = place.Key;
-
-                int shortDate = temp.Year;
-
-                if (place.Key.Year == year)
-                {
-                    priceRunningTotal += place.Value;
-                    counter++;
-                    //WriteLine(shortDate);
-                    //WriteLine(priceRunningTotal);
-                }
-
-            }
-            averagePrice = (priceRunningTotal / counter);
-
-            //reset counter
-            counter = 0;
-
+                      
             //need to definflate SPCS20RSA based on CPI
             foreach (var place in dataDictionary["consPriceIndex"])
             {
@@ -422,31 +402,92 @@ namespace FredAPI
                 }
 
             }
-            averageCPI = (CPIRunningTotal / counter);
-
-            WriteLine("averagePrice: {0}", averagePrice);
-
+            averageCPI = ((double?)CPIRunningTotal / counter);
             WriteLine("averageCPI: {0}", averageCPI);
+
+            //reset counter  
+            counter = 0;
+
+            //need to definflate SPCS20RSA based on CPI
+            foreach (var place in dataDictionary["housingSeries"])
+            {
+                DateTime temp = place.Key;
+
+                int shortDate = temp.Year;
+
+                if (place.Key.Year == year)
+                {
+                    runningTotal += place.Value;
+                    counter++;
+                    //WriteLine(shortDate);
+                    //WriteLine(priceRunningTotal);
+                }
+
+            }
+            averageHousingPrice = ((double?)runningTotal / counter);
+
+            WriteLine("averageHousingPrice: {0}", averageHousingPrice);
+
+            //reset counter  
+            counter = 0;
+            runningTotal = 0.0;
+
+            //need to definflate construction based on CPI
+            foreach (var place in dataDictionary["construction"])
+            {
+                DateTime temp = place.Key;
+
+                int shortDate = temp.Year;
+
+                if (place.Key.Year == year)
+                {
+                    runningTotal += place.Value;
+                    counter++;
+                    //WriteLine(shortDate);
+                    //WriteLine(priceRunningTotal);
+                }
+
+            }
+            averageConstructionPrice = ((double?)runningTotal / counter);
+
+            WriteLine("averageConstruction: {0}", averageConstructionPrice);
 
             //deInflate housing
 
-            var keys = new List<DateTime>(dataDictionary["housingSeries"].Keys);
+            var keysHousing = new List<DateTime>(dataDictionary["housingSeries"].Keys);
 
             //values are read only
             //foreach (var place in dataDictionary["consPriceIndex"])
-            foreach (DateTime key in keys)
+            foreach (DateTime key in keysHousing)
             {
 
-                double? divisor = averagePrice / dataDictionary["housingSeries"][key].Value;
+                double? divisor = (double?)averageHousingPrice / dataDictionary["housingSeries"][key].Value;
 
-                double? divided = dataDictionary["housingSeries"][key].Value / divisor;
+                double? divided = (double?)dataDictionary["housingSeries"][key].Value / divisor;
 
-                double? factor = dataDictionary["consPriceIndex"][key] / averageCPI;
+                double? factor = (double?)dataDictionary["consPriceIndex"][key] / averageCPI;
 
                 double? newValue = divided * factor;
                 //WriteLine(dataDictionary["housingSeries"][key].ToString());
                 //WriteLine("{0} {1} {2} {3} {4}", key, dataDictionary["housingSeries"][key].ToString(), divisor, divided, newValue);
                 dataDictionary["housingSeries"][key] = newValue;
+            }
+
+            //deinflate construction
+            var keysConstruction = new List<DateTime>(dataDictionary["construction"].Keys);
+            foreach (DateTime key in keysConstruction)
+            {
+
+                double? divisor = (double?)averageConstructionPrice / dataDictionary["construction"][key].Value;
+
+                double? divided = (double?)dataDictionary["construction"][key].Value / divisor;
+
+                double? factor = (double?)dataDictionary["consPriceIndex"][key] / averageCPI;
+
+                double? newValue = divided * factor;
+                //WriteLine(dataDictionary["housingSeries"][key].ToString());
+                //WriteLine("{0} {1} {2} {3} {4}", key, dataDictionary["housingSeries"][key].ToString(), divisor, divided, newValue);
+                dataDictionary["construction"][key] = newValue;
             }
         }
 
@@ -717,10 +758,10 @@ namespace FredAPI
             //can't use # in GetSeriesObservations.  Ignores the dates.
 
             //my names
-            string[] dataNames = new string[] { "rGDP", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries" };
+            string[] dataNames = new string[] { "construction", "pSaveRate", "fedFundRate", "empPopRatio", "consConfIndex", "consPriceIndex", "housingSeries" };
 
             //online series names
-            string[] obsNames = new string[] { "GDPC1", "PSAVERT", "DFF", "EMRATIO", "UMCSENT", "CP0000USM086NEST", "SPCS20RSA" };
+            string[] obsNames = new string[] { "TLRESCONS", "PSAVERT", "DFF", "EMRATIO", "UMCSENT", "CP0000USM086NEST", "SPCS20RSA" };
 
             int dataCounter = 0;
 
@@ -758,7 +799,9 @@ namespace FredAPI
 
             //insert records (into rGDP)
             //ideally might want to have this second.
-            FillInGaps(ref sortedDataList);
+            
+            //for rGDP
+            //FillInGaps(ref sortedDataList);
 
             //identify minmax dates, and trim list, if ran before FillInGaps, rGDP doesn't populate up till HighestDate2
             MinMaxDates(ref sortedDataList);
