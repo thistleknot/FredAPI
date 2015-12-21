@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Console;
 using Xaye.Fred;
+using RDotNet;
 //using System.Text.RegularExpressions.Regex;
 
 namespace FredAPI
@@ -490,8 +491,23 @@ namespace FredAPI
                             //can't do list.Add due to forEach loop already having enumerated the list to loop through.
 
                             //I could modify this for the # of days in the month, doa  weighted sum
-                            holder.Add(lastDate.AddMonths(1), (ob.Value + lastValue) / 2);
-                            holder.Add(lastDate.AddMonths(2), (ob.Value + lastValue) / 2);
+
+                            //holder.Add(lastDate.AddMonths(1), (ob.Value + lastValue) / 2);
+                            //holder.Add(lastDate.AddMonths(2), (ob.Value + lastValue) / 2);
+                            double? days = (double?)((ob.Key - lastDate).TotalDays);
+
+
+                            //double? divisor = ((double?)1 / 3);
+                            int daysOfFirstMonth = System.DateTime.DaysInMonth(lastDate.Year, lastDate.Month) + 1;
+                            double? divisor = (((double?)daysOfFirstMonth) / days);
+                            //double? divisor = 
+                            //Console.WriteLine((ob.Value - lastValue) * divisor);
+                            double? newValue = ((ob.Value - lastValue) * divisor);
+
+                            holder.Add(lastDate.AddMonths(1), newValue + lastValue);
+                            newValue = (ob.Value - lastValue) * (1- divisor);
+                            holder.Add(lastDate.AddMonths(2), newValue + lastValue);
+                            
                         }
                     }
 

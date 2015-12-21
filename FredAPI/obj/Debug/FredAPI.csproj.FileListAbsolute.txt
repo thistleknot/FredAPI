@@ -11,3 +11,16 @@ C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\Dy
 C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\RDotNet.xml
 C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\bin\Debug\RDotNet.NativeLibrary.xml
 C:\Users\User\documents\visual studio 2015\Projects\FredAPI\FredAPI\obj\Debug\FredAPI.csprojResolveAssemblyReference.cache
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\FredAPI.exe.config
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\obj\Debug\FredAPI.exe
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\obj\Debug\FredAPI.pdb
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\FredAPI.exe
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\FredAPI.pdb
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\DynamicInterop.dll
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\RDotNet.dll
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\RDotNet.NativeLibrary.dll
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\Xaye.Fred.dll
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\DynamicInterop.xml
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\RDotNet.xml
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\bin\Debug\RDotNet.NativeLibrary.xml
+C:\Users\User\Documents\GitHub\FredAPI\FredAPI\obj\Debug\FredAPI.csprojResolveAssemblyReference.cache
