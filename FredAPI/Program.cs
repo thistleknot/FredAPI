@@ -401,7 +401,7 @@ namespace FredAPI
                 }
 
             }
-            averagePrice = (priceRunningTotal / counter);
+            averagePrice = ((double?)priceRunningTotal / counter);
 
             //reset counter
             counter = 0;
@@ -422,7 +422,7 @@ namespace FredAPI
                 }
 
             }
-            averageCPI = (CPIRunningTotal / counter);
+            averageCPI = ((double?)CPIRunningTotal / counter);
 
             WriteLine("averagePrice: {0}", averagePrice);
 
@@ -437,11 +437,11 @@ namespace FredAPI
             foreach (DateTime key in keys)
             {
 
-                double? divisor = averagePrice / dataDictionary["housingSeries"][key].Value;
+                double? divisor = (double?)averagePrice / dataDictionary["housingSeries"][key].Value;
 
-                double? divided = dataDictionary["housingSeries"][key].Value / divisor;
+                double? divided = (double?)dataDictionary["housingSeries"][key].Value / divisor;
 
-                double? factor = dataDictionary["consPriceIndex"][key] / averageCPI;
+                double? factor = (double?)dataDictionary["consPriceIndex"][key] / averageCPI;
 
                 double? newValue = divided * factor;
                 //WriteLine(dataDictionary["housingSeries"][key].ToString());
