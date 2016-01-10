@@ -14,6 +14,21 @@ namespace FredAPI
     class Program
     {
 
+        static double reciprocalConversion(double oldValue, double newValue)
+        {
+            double difference;
+            difference = oldValue - newValue;
+            if (difference > 0)
+            {
+                return (1 - (double)1 / (difference + 1) * 0.5 + 0.5);
+            }
+            else
+            {
+                return ((double)1 / (Math.Abs(difference) + 1 * 0.5));
+            }
+            
+        }
+
         //from http://stackoverflow.com/questions/4734116/find-and-extract-a-number-from-a-string
         static int extractNumber(string text)
         {
@@ -259,7 +274,7 @@ namespace FredAPI
                                     {
                                         //The last training set I should be predicting?  Well... I still need to check against it.
                                         testFile.WriteLine();
-                                        //HERE
+                                        
                                         if (price)
                                         {
                                             testFile.WriteLine("out: {0}", (reciprocal((double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow + monthsToPredict - 1]].Value)))).ToString(".################"));
@@ -268,10 +283,12 @@ namespace FredAPI
                                         {
                                             double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow + monthsToPredict - 1]].Value));
                                             double oldPrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow - 1]].Value));
+                                            /*
                                             if (futurePrice > oldPrice)
                                             {
                                                 //more
                                                 testFile.WriteLine("out: 1");
+                                              
 
                                             }
                                             else if (futurePrice < oldPrice)
@@ -283,6 +300,8 @@ namespace FredAPI
                                             {
                                                 testFile.WriteLine("out: .5");
                                             }
+                                            */
+                                            testFile.WriteLine("out: {0}", reciprocalConversion(futurePrice, oldPrice));
                                         }
 
 
@@ -341,6 +360,7 @@ namespace FredAPI
                                             {
                                                 double futurePrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow + monthsToPredict - 1]].Value));
                                                 double oldPrice = (double)((dataDictionary["housingSeries"][dates[slide + windowNumber + positionInWindow - 1]].Value));
+                                                /*
                                                 if (futurePrice > oldPrice)
                                                 {
                                                     //more
@@ -352,6 +372,8 @@ namespace FredAPI
                                                     //less
                                                     file.WriteLine("out: 0");
                                                 }
+                                                */
+                                                file.WriteLine("out: {0}", reciprocalConversion(futurePrice, oldPrice));
                                             }
 
 
