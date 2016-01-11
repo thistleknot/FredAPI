@@ -20,11 +20,15 @@ namespace FredAPI
             difference = oldValue - newValue;
             if (difference > 0)
             {
-                return (1 - (double)1 / (difference + 1) * 0.5 + 0.5);
+                double value;
+                value = (1 - ((double)1 / (difference + 1)) * 0.5 + 0.5);
+                return value;
             }
             else
             {
-                return ((double)1 / (Math.Abs(difference) + 1) * 0.5);
+                double value;
+                value = ((double)1 / (Math.Abs(difference) + 1) * 0.5);
+                return value;
             }
             
         }
