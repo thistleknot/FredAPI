@@ -24,7 +24,7 @@ namespace FredAPI
             }
             else
             {
-                return ((double)1 / (Math.Abs(difference) + 1 * 0.5));
+                return ((double)1 / (Math.Abs(difference) + 1) * 0.5);
             }
             
         }

@@ -1,2 +1,7 @@
 *.txt
 *.csv
+*.exe
+FredAPI/bin/Debug/FredAPI.pdb
+*.cache
+FredAPI/obj/Debug/FredAPI.exe
+*.pdb
