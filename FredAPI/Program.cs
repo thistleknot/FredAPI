@@ -21,7 +21,7 @@ namespace FredAPI
             if (difference > 0)
             {
                 double value;
-                value = (1 - ((double)1 / (difference + 1)) * 0.5 + 0.5);
+                value = (1 - ((double)1 / (difference + 1))) * 0.5 + 0.5;
                 return value;
             }
             else
